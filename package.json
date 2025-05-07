@@ -1,0 +1,61 @@
+{
+  "name": "whatsapp-server",
+  "version": "1.0.0",
+  "description": "Servidor de WhatsApp con interfaz web para enviar mensajes",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/albarqi19/wts.git"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "electron-dev": "concurrently \"cross-env ELECTRON_START_URL=http://localhost:3000 npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron": "electron .",
+    "package": "electron-builder build --win -c.extraMetadata.main=main.js --publish never",
+    "build": "node build.js",
+    "publish": "electron-builder build --win --publish always",
+    "activation": "node tools/activation-manager.js",
+    "test-activation": "node test/test-activation.js",
+    "clean": "node tools/clean-project.js",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "api",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "electron-store": "^10.0.1",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "google-auth-library": "^9.15.1",
+    "google-spreadsheet": "^4.1.4",
+    "googleapis": "^148.0.0",
+    "mongoose": "^8.14.1",
+    "multer": "^1.4.5-lts.2",
+    "node-schedule": "^2.1.1",
+    "node-windows": "^1.0.0-beta.8",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.2",
+    "uuid": "^11.1.0",
+    "whatsapp-web.js": "^1.23.0",
+    "electron-updater": "^6.1.7",
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^36.1.0",
+    "electron-builder": "^26.0.12",
+    "nodemon": "^3.0.1",
+    "wait-on": "^8.0.3"
+  }
+}

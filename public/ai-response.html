@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرد الذكي - Google Gemini</title>
+    <!-- تغيير رابط Bootstrap إلى النسخة RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* تصميم خاص بصفحة الرد الذكي */
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-color, #128C7E);
+            min-height: 100vh;
+            padding: 20px 0;
+            color: white;
+        }
+        
+        .sidebar-title {
+            padding: 0 15px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .nav-link i {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: bold;
+        }
+        
+        .form-label {
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color, #128C7E);
+            border-color: var(--primary-color, #128C7E);
+        }
+        
+        .btn-primary:hover {
+            background-color: #0d6e61;
+            border-color: #0d6e61;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- القائمة الجانبية -->
+            <div class="col-md-2 sidebar">
+                <h3 class="sidebar-title mb-4">واتساب ويب</h3>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="bi bi-house"></i> الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="devices.html"><i class="bi bi-phone"></i> الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="chats.html"><i class="bi bi-chat"></i> المحادثات</a>
+                    </li>
+                    <!-- Contacts link removed -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="bulk-messaging.html"><i class="bi bi-envelope"></i> الرسائل الجماعية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="integration.html"><i class="bi bi-plugin"></i> التكاملات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="ai-response.html"><i class="bi bi-robot"></i> الرد الذكي</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- المحتوى الرئيسي -->
+            <div class="col-md-10 content">
+                <h2 class="mb-4"><i class="bi bi-robot"></i> الرد الذكي باستخدام Google Gemini</h2>
+                
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">نظام الرد الذكي</h5>
+                                <p class="card-text">
+                                    يمكنك هنا إعداد ردود تلقائية ذكية باستخدام Google Gemini AI والربط مع ملفات Google Sheets للرد على استفسارات العملاء بشكل آلي.
+                                </p>
+                                <button id="btnAddResponse" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> إضافة نموذج رد ذكي جديد
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- قائمة نماذج الرد الذكي -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>نماذج الرد الذكي</h5>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="showActiveOnly">
+                                    <label class="form-check-label" for="showActiveOnly">عرض النماذج النشطة فقط</label>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>الاسم</th>
+                                                <th>الوصف</th>
+                                                <th>النوع</th>
+                                                <th>الجهاز</th>
+                                                <th>الحالة</th>
+                                                <th>الإجراءات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="aiResponsesList">
+                                            <!-- سيتم إضافة البيانات هنا ديناميكيًا -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="noResponses" class="alert alert-info" style="display: none;">
+                                    لا توجد نماذج رد ذكي مضافة بعد
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- اختبار الرد الذكي -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>اختبار الرد الذكي</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="testResponseSelect" class="form-label">اختر نموذج الرد الذكي:</label>
+                                    <select class="form-select" id="testResponseSelect">
+                                        <option value="">-- اختر نموذج رد ذكي --</option>
+                                        <!-- سيتم إضافة الخيارات ديناميكيًا -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="testMessage" class="form-label">أدخل رسالة للاختبار:</label>
+                                    <textarea class="form-control" id="testMessage" rows="3" placeholder="مثال: كم عدد أيام غيابي؟"></textarea>
+                                </div>
+                                <button id="btnTestResponse" class="btn btn-primary" disabled>
+                                    <i class="bi bi-lightning"></i> اختبار الرد
+                                </button>
+                                
+                                <div class="mt-3" id="testResultContainer" style="display: none;">
+                                    <h6>نتيجة الاختبار:</h6>
+                                    <div class="p-3 border rounded bg-light">
+                                        <p id="testResultText"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة نموذج رد ذكي جديد -->
+    <div class="modal fade" id="addResponseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">إضافة نموذج رد ذكي جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="responseForm">
+                        <input type="hidden" id="responseId">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="responseName" class="form-label">اسم النموذج:</label>
+                                <input type="text" class="form-control" id="responseName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="responseType" class="form-label">نوع النموذج:</label>
+                                <select class="form-select" id="responseType" required>
+                                    <option value="gemini">Google Gemini</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="responseDescription" class="form-label">نص المطالبة (Prompt):</label>
+                            <textarea class="form-control" id="responseDescription" rows="5" placeholder="أدخل هنا نص المطالبة (Prompt) الذي سيوجه الذكاء الاصطناعي في كيفية الرد على الرسائل. مثلاً: أنت مساعد عملاء ودود لشركة تقنية. قدم ردود مختصرة ومفيدة وباللغة العربية فقط."></textarea>
+                            <small class="text-muted">هذا النص سيتم استخدامه كتعليمات نظام (System Instruction) لتوجيه الذكاء الاصطناعي في كيفية صياغة الردود.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="deviceId" class="form-label">الجهاز:</label>
+                            <select class="form-select" id="deviceId" required>
+                                <option value="">-- اختر جهازًا --</option>
+                                <!-- سيتم إضافة الأجهزة ديناميكيًا -->
+                            </select>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6>إعدادات Google Gemini AI</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="geminiApiKey" class="form-label">مفتاح Google API:</label>
+                                    <input type="text" class="form-control" id="geminiApiKey" placeholder="أدخل مفتاح API لـ Google Gemini" required>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="geminiModel" class="form-label">نموذج Google Gemini:</label>
+                                        <select class="form-select" id="geminiModel">
+                                            <option value="gemini-pro">Gemini Pro</option>
+                                            <option value="gemini-pro-vision">Gemini Pro Vision</option>
+                                            <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                                            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                            <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                                            <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                                            <option value="gemini-2.0-pro">Gemini 2.0 Pro</option>
+                                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="geminiTemperature" class="form-label">مستوى الإبداع (0 - 1):</label>
+                                        <input type="number" class="form-control" id="geminiTemperature" min="0" max="1" step="0.1" value="0.7">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="geminiMaxTokens" class="form-label">الحد الأقصى للرموز:</label>
+                                    <input type="number" class="form-control" id="geminiMaxTokens" min="100" max="1000" value="800">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6>ربط Google Sheets</h6>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="useGoogleSheets">
+                                    <label class="form-check-label" for="useGoogleSheets">تفعيل</label>
+                                </div>
+                            </div>
+                            <div class="card-body" id="googleSheetsSettings" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="googleSheetsId" class="form-label">معرف ملف Google Sheets:</label>
+                                    <input type="text" class="form-control" id="googleSheetsId" placeholder="أدخل معرف ملف Google Sheets">
+                                    <small class="text-muted">يمكنك الحصول عليه من رابط الملف، مثال: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="sheetIndex" class="form-label">رقم ورقة العمل (يبدأ من 0):</label>
+                                    <input type="number" class="form-control" id="sheetIndex" min="0" value="0">
+                                </div>
+                                <div class="alert alert-info">
+                                    <small>
+                                        <i class="bi bi-info-circle"></i> تأكد من جعل ملف Google Sheets عامًا للقراءة أو توفير بيانات اعتماد حساب الخدمة.
+                                        <br>للحصول على أفضل النتائج، يجب أن يحتوي الملف على رؤوس أعمدة واضحة.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6>كلمات مفتاحية للتفعيل (اختياري)</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="triggers" class="form-label">الكلمات المفتاحية للتفعيل:</label>
+                                    <textarea class="form-control" id="triggers" rows="2" placeholder="أدخل الكلمات المفتاحية مفصولة بفواصل، مثال: غياب، حضور، تأخير"></textarea>
+                                    <small class="text-muted">إذا كانت الرسالة الواردة تحتوي على أي من هذه الكلمات، سيتم تفعيل الرد الذكي. اتركه فارغًا للرد على جميع الرسائل.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="responseActive" checked>
+                            <label class="form-check-label" for="responseActive">تفعيل هذا النموذج</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveResponse">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة تأكيد الحذف -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تأكيد الحذف</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في حذف هذا النموذج؟ لا يمكن التراجع عن هذا الإجراء.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmDelete">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- استخدام ملف الواجهة الجديد بدلاً من القديم -->
+    <script src="ai-response-frontend.js"></script>
+</body>
+</html>

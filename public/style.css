@@ -1,0 +1,88 @@
+:root {
+    --primary-color: #128C7E;
+    --secondary-color: #25D366;
+    --accent-color: #34B7F1;
+    --dark-color: #075E54;
+    --light-color: #ECE5DD;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--dark-color);
+    border-color: var(--dark-color);
+}
+
+.bg-success {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--dark-color) !important;
+}
+
+#qrcode img {
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+}
+
+#qrcode-container {
+    transition: all 0.3s ease;
+}
+
+#log-container {
+    background-color: #000;
+    color: #fff;
+    font-family: monospace;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#log-content {
+    margin: 0;
+}
+
+.log-entry {
+    margin-bottom: 5px;
+}
+
+.log-info {
+    color: #4caf50;
+}
+
+.log-error {
+    color: #f44336;
+}
+
+.log-warning {
+    color: #ff9800;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px;
+    }
+}

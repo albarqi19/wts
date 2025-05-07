@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - خادم WhatsApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #128C7E;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .activation-code {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .activation-code input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            margin: 0 4px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .activation-code input:focus {
+            border-color: #25D366;
+            outline: none;
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #25D366;
+            outline: none;
+        }
+        
+        button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .error-message {
+            color: #ff3e3e;
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+        }
+        
+        .success-message {
+            color: #25D366;
+            margin-top: 15px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .success-message.show {
+            opacity: 1;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(18, 140, 126, 0.2);
+            border-radius: 50%;
+            border-top: 4px solid #128C7E;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .device-info {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://cdn-icons-png.flaticon.com/512/124/124034.png" alt="WhatsApp Logo" class="logo">
+        <h1>مرحباً بك في خادم WhatsApp</h1>
+        
+        <div id="activation-screen">
+            <div class="form-group">
+                <label for="activation-code">أدخل رمز التفعيل</label>
+                <div class="activation-code">
+                    <input type="text" maxlength="1" id="code-1" class="code-input" autofocus>
+                    <input type="text" maxlength="1" id="code-2" class="code-input">
+                    <input type="text" maxlength="1" id="code-3" class="code-input">
+                    <input type="text" maxlength="1" id="code-4" class="code-input">
+                    <input type="text" maxlength="1" id="code-5" class="code-input">
+                    <input type="text" maxlength="1" id="code-6" class="code-input">
+                </div>
+            </div>
+            
+            <button id="verify-button">تحقق</button>
+            <p class="error-message" id="error-message"></p>
+            <p class="success-message" id="success-message"></p>
+        </div>
+        
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            <p style="margin-top: 20px;">جاري التحقق...</p>
+        </div>
+
+        <div class="device-info" id="device-info"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // التعامل مع إدخال رمز التحقق
+            const codeInputs = document.querySelectorAll('.code-input');
+            const verifyButton = document.getElementById('verify-button');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const deviceInfoEl = document.getElementById('device-info');
+            
+            // الانتقال بين حقول الإدخال
+            codeInputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    if (e.target.value) {
+                        if (index < codeInputs.length - 1) {
+                            codeInputs[index + 1].focus();
+                        }
+                    }
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // عرض معلومات الجهاز
+            try {
+                const deviceInfo = await window.electron.getDeviceInfo();
+                deviceInfoEl.textContent = `معرف الجهاز: ${deviceInfo.id.substring(0, 8)}...`;
+            } catch (error) {
+                console.error('فشل في الحصول على معلومات الجهاز', error);
+            }
+            
+            // التحقق من الرمز
+            verifyButton.addEventListener('click', async () => {
+                // جمع الرمز
+                let activationCode = '';
+                let isValid = true;
+                
+                codeInputs.forEach(input => {
+                    if (!input.value) {
+                        isValid = false;
+                    }
+                    activationCode += input.value;
+                });
+                
+                if (!isValid) {
+                    showError('الرجاء إدخال رمز التفعيل كاملاً');
+                    return;
+                }
+                
+                // عرض حالة التحميل
+                loadingOverlay.style.display = 'flex';
+                
+                // إرسال الرمز للتحقق
+                window.electron.verifyActivationCode(activationCode);
+            });
+            
+            // استماع لنتيجة التحقق
+            window.electron.onVerificationResult((result) => {
+                loadingOverlay.style.display = 'none';
+                
+                if (result.success) {
+                    showSuccess('تم التحقق بنجاح! جاري الدخول...');
+                    setTimeout(() => {
+                        window.electron.notifyLoginSuccess();
+                    }, 1500);
+                } else {
+                    showError(result.message || 'رمز التفعيل غير صحيح');
+                }
+            });
+            
+            // إظهار رسالة خطأ
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+                successMessage.classList.remove('show');
+                
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 5000);
+            }
+            
+            // إظهار رسالة نجاح
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.classList.add('show');
+                errorMessage.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

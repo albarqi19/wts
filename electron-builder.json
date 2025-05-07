@@ -1,0 +1,66 @@
+{
+  "appId": "com.whatsapp.server",
+  "productName": "WhatsApp Server",
+  "directories": {
+    "output": "dist",
+    "buildResources": "build"
+  },
+  "files": [
+    "**/*",
+    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+    "!**/node_modules/*/{.editorconfig,.eslintrc.json,.gitattributes,.gitignore,.travis.yml}",
+    "!{.git,.idea,.vscode,docs,temp,dist,.github,.babelrc}"
+  ],
+  "win": {
+    "icon": "build/icon.ico",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "node_modules",
+        "to": "resources/app/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": true,
+    "allowToChangeInstallationDirectory": true,
+    "license": "LICENSE.txt",
+    "deleteAppDataOnUninstall": true,
+    "include": "installer.nsh",
+    "installerIcon": "build/icon.ico",
+    "uninstallerIcon": "build/icon.ico",
+    "artifactName": "${productName}-Setup-${version}.${ext}"
+  },
+  "extraResources": [
+    {
+      "from": "data",
+      "to": "data",
+      "filter": [
+        "**/*"
+      ]
+    }
+  ],
+  "asarUnpack": [
+    "node_modules/puppeteer/.local-chromium/**/*",
+    "node_modules/whatsapp-web.js/**/*"
+  ],
+  "publish": {
+    "provider": "github",
+    "owner": "albarqi19",
+    "repo": "wts",
+    "private": false,
+    "releaseType": "release"
+  }
+}

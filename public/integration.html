@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التكامل - نظام واتساب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">نظام واتساب</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/devices">الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chats">المحادثات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/integration">التكامل</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">التكامل مع الخدمات الخارجية</h5>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addIntegrationModal">
+                            <i class="bi bi-plus-circle me-1"></i> إضافة تكامل جديد
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            يمكنك إنشاء تكاملات مع خدمات خارجية مثل أنظمة CRM، خدمات البريد الإلكتروني، الذكاء الاصطناعي وغيرها.
+                        </div>
+
+                        <div id="integrationsList" class="mt-3">
+                            <div class="text-center py-3 loading-indicator">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">جاري التحميل...</span>
+                                </div>
+                            </div>
+                            <div class="no-data-message d-none">
+                                <p class="text-center text-muted">لا توجد تكاملات حالياً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- شرح التكاملات المتاحة -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="bi bi-file-earmark-spreadsheet me-2"></i> تكامل Google Sheets</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>أرسل رسائل تلقائية بناءً على بيانات من جداول Google Sheets.</p>
+                        <div class="accordion" id="googleSheetsHelp">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingOne">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                        كيفية إعداد تكامل Google Sheets
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#googleSheetsHelp">
+                                    <div class="accordion-body">
+                                        <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">قم بإنشاء ملف Google Sheets أو استخدم ملفاً موجوداً</li>
+                                            <li class="list-group-item">اضبط جدول البيانات ليحتوي على عمود لرقم الهاتف وعمود آخر للرسالة</li>
+                                            <li class="list-group-item">انقر على "مشاركة" واجعل الملف قابلاً للوصول عن طريق الرابط</li>
+                                            <li class="list-group-item">انسخ معرف ملف Google Sheets من الرابط (الجزء بين /d/ و /edit)</li>
+                                            <li class="list-group-item">أدخل المعرف وباقي المعلومات في نموذج "إضافة تكامل جديد"</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="bi bi-link-45deg me-2"></i> تكامل Webhook</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>اربط واتساب مع خدمات خارجية عن طريق Webhooks.</p>
+                        <div class="accordion" id="webhookHelp">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingWebhook">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWebhook" aria-expanded="false" aria-controls="collapseWebhook">
+                                        كيفية إعداد تكامل Webhook
+                                    </button>
+                                </h2>
+                                <div id="collapseWebhook" class="accordion-collapse collapse" aria-labelledby="headingWebhook" data-bs-parent="#webhookHelp">
+                                    <div class="accordion-body">
+                                        <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">قم بإنشاء نقطة نهاية API في نظامك</li>
+                                            <li class="list-group-item">أدخل رابط webhook الخاص بك في نموذج الإضافة</li>
+                                            <li class="list-group-item">يمكنك تخصيص أنواع الأحداث التي تريد استلامها</li>
+                                            <li class="list-group-item">قم بتكوين مفتاح سري للتحقق من صحة الطلبات (اختياري)</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="bi bi-people me-2"></i> تكامل CRM</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>قم بمزامنة جهات الاتصال والرسائل مع أنظمة CRM الشهيرة مثل HubSpot، Salesforce وZoho.</p>
+                        <div class="accordion" id="crmHelp">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingCRM">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCRM" aria-expanded="false" aria-controls="collapseCRM">
+                                        كيفية إعداد تكامل CRM
+                                    </button>
+                                </h2>
+                                <div id="collapseCRM" class="accordion-collapse collapse" aria-labelledby="headingCRM" data-bs-parent="#crmHelp">
+                                    <div class="accordion-body">
+                                        <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">اختر نظام CRM المطلوب (HubSpot، Salesforce، أو Zoho)</li>
+                                            <li class="list-group-item">أنشئ مفتاح API من لوحة تحكم نظام CRM الخاص بك</li>
+                                            <li class="list-group-item">أدخل مفتاح API والإعدادات الأخرى في نموذج الإضافة</li>
+                                            <li class="list-group-item">حدد اتجاه المزامنة: ثنائي، من واتساب إلى CRM، أو العكس</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="bi bi-envelope me-2"></i> تكامل البريد الإلكتروني</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>ربط واتساب مع منصات التسويق عبر البريد الإلكتروني مثل Mailchimp، SendGrid وSendinblue.</p>
+                        <div class="accordion" id="emailHelp">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingEmail">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmail" aria-expanded="false" aria-controls="collapseEmail">
+                                        كيفية إعداد تكامل البريد الإلكتروني
+                                    </button>
+                                </h2>
+                                <div id="collapseEmail" class="accordion-collapse collapse" aria-labelledby="headingEmail" data-bs-parent="#emailHelp">
+                                    <div class="accordion-body">
+                                        <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">اختر منصة البريد الإلكتروني (Mailchimp، SendGrid، أو Sendinblue)</li>
+                                            <li class="list-group-item">أنشئ مفتاح API من لوحة تحكم المنصة</li>
+                                            <li class="list-group-item">أدخل معرف القائمة البريدية التي تريد مزامنتها</li>
+                                            <li class="list-group-item">حدد ما إذا كنت تريد إرسال حملات البريد الإلكتروني عبر واتساب</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5><i class="bi bi-robot me-2"></i> تكامل الذكاء الاصطناعي</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>استخدم خدمات الذكاء الاصطناعي مثل OpenAI وDialogflow للرد التلقائي على رسائل واتساب.</p>
+                        <div class="accordion" id="aiHelp">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingAI">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAI" aria-expanded="false" aria-controls="collapseAI">
+                                        كيفية إعداد تكامل الذكاء الاصطناعي
+                                    </button>
+                                </h2>
+                                <div id="collapseAI" class="accordion-collapse collapse" aria-labelledby="headingAI" data-bs-parent="#aiHelp">
+                                    <div class="accordion-body">
+                                        <ol class="list-group list-group-numbered">
+                                            <li class="list-group-item">اختر مزود الذكاء الاصطناعي (OpenAI، Dialogflow، أو API مخصص)</li>
+                                            <li class="list-group-item">أدخل مفتاح API الخاص بمزود الخدمة</li>
+                                            <li class="list-group-item">قم بتكوين النص التوجيهي للرد على الرسائل</li>
+                                            <li class="list-group-item">حدد الكلمات التي ستؤدي لتفعيل الرد التلقائي</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة تكامل جديد -->
+    <div class="modal fade" id="addIntegrationModal" tabindex="-1" aria-labelledby="addIntegrationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addIntegrationModalLabel">إضافة تكامل جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="integrationForm">
+                        <div class="mb-3">
+                            <label for="integrationType" class="form-label">نوع التكامل</label>
+                            <select class="form-select" id="integrationType" required>
+                                <option value="" selected disabled>اختر نوع التكامل</option>
+                                <option value="google_sheets">Google Sheets</option>
+                                <option value="webhook">Webhook</option>
+                                <option value="crm">أنظمة إدارة علاقات العملاء (CRM)</option>
+                                <option value="email">منصات البريد الإلكتروني</option>
+                                <option value="ai">الذكاء الاصطناعي</option>
+                            </select>
+                        </div>
+
+                        <!-- حقول تكامل Google Sheets -->
+                        <div id="googleSheetsFields" class="d-none integration-fields">
+                            <div class="mb-3">
+                                <label for="integrationName" class="form-label">اسم التكامل</label>
+                                <input type="text" class="form-control" id="integrationName" placeholder="مثال: متابعة المبيعات" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="deviceId" class="form-label">الجهاز</label>
+                                <select class="form-select" id="deviceId" required>
+                                    <option value="" selected disabled>اختر الجهاز</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="sheetId" class="form-label">معرف جدول البيانات</label>
+                                <input type="text" class="form-control" id="sheetId" placeholder="معرف Google Sheets" required>
+                                <div class="form-text">مثال: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="sheetName" class="form-label">اسم الورقة (اختياري)</label>
+                                <input type="text" class="form-control" id="sheetName" placeholder="ترك فارغا للورقة الافتراضية">
+                                <div class="form-text">اسم الورقة في جدول البيانات. اتركه فارغاً للورقة الأولى</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phoneColumn" class="form-label">عمود رقم الهاتف</label>
+                                <input type="text" class="form-control" id="phoneColumn" placeholder="مثال: A" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="messageColumn" class="form-label">عمود الرسالة</label>
+                                <input type="text" class="form-control" id="messageColumn" placeholder="مثال: B" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="syncInterval" class="form-label">فترة المزامنة</label>
+                                <select class="form-select" id="syncInterval" required>
+                                    <option value="1">كل دقيقة</option>
+                                    <option value="5" selected>كل 5 دقائق</option>
+                                    <option value="15">كل 15 دقيقة</option>
+                                    <option value="30">كل 30 دقيقة</option>
+                                    <option value="60">كل ساعة</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="markAsSent" checked>
+                                    <label class="form-check-label" for="markAsSent">
+                                        تحديث الصف بعد الإرسال
+                                    </label>
+                                </div>
+                                <div class="form-text">سيتم إضافة عمود جديد لتتبع حالة الإرسال</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sendOnlyNew" checked>
+                                    <label class="form-check-label" for="sendOnlyNew">
+                                        إرسال الصفوف الجديدة فقط
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- حقول تكامل Webhook -->
+                        <div id="webhookFields" class="d-none integration-fields">
+                            <div class="mb-3">
+                                <label for="webhookIntegrationName" class="form-label">اسم التكامل</label>
+                                <input type="text" class="form-control" id="webhookIntegrationName" placeholder="مثال: تكامل n8n" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="webhookDeviceId" class="form-label">الجهاز</label>
+                                <select class="form-select" id="webhookDeviceId" required>
+                                    <option value="" selected disabled>اختر الجهاز</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="webhookUrl" class="form-label">عنوان الـ Webhook</label>
+                                <input type="url" class="form-control" id="webhookUrl" placeholder="عنوان URL الخاص بـ n8n" required>
+                                <div class="form-text">أدخل عنوان الـ webhook الخاص بـ n8n الذي سيتم إرسال البيانات إليه</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="webhookSyncInterval" class="form-label">نوع الإشعارات</label>
+                                <select class="form-select" id="webhookSyncInterval" required>
+                                    <option value="0" selected>تنفيذ فوري مباشر</option>
+                                    <option value="1">كل دقيقة</option>
+                                    <option value="5">كل 5 دقائق</option>
+                                    <option value="15">كل 15 دقيقة</option>
+                                    <option value="30">كل 30 دقيقة</option>
+                                    <option value="60">كل ساعة</option>
+                                </select>
+                                <div class="form-text">اختر "تنفيذ فوري مباشر" لإرسال الإشعارات بشكل فوري عند استلام الرسائل</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyOnNewMessage" checked>
+                                    <label class="form-check-label" for="notifyOnNewMessage">
+                                        إشعار عند الرسائل الجديدة
+                                    </label>
+                                </div>
+                                <div class="form-text">سيتم إرسال إشعار إلى الـ webhook عند استلام رسالة جديدة</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyOnStatusChange">
+                                    <label class="form-check-label" for="notifyOnStatusChange">
+                                        إشعار عند تغيير حالة الرسائل
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyOnGroupActivity">
+                                    <label class="form-check-label" for="notifyOnGroupActivity">
+                                        إشعار عند نشاط المجموعات
+                                    </label>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="enableReceiveData">
+                                    <label class="form-check-label" for="enableReceiveData">
+                                        <strong>تمكين استقبال البيانات من n8n (bidirectional)</strong>
+                                    </label>
+                                </div>
+                                <div class="form-text">سيسمح هذا الخيار للتكامل باستقبال البيانات وإرسال الرسائل بناءً على الطلبات الواردة من n8n</div>
+                            </div>
+
+                            <div id="receiveDataSection" class="ms-4 ps-2 border-start" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="webhookToken" class="form-label">رمز الوصول (token)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="webhookToken" placeholder="سيتم إنشاؤه تلقائياً" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" id="generateToken">إنشاء</button>
+                                    </div>
+                                    <div class="form-text mt-2">عنوان URL الذي سترسل إليه n8n البيانات سيكون:<br>
+                                    <code id="webhookReceiveUrl">http://your-server/api/webhook/{token}</code></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="webhookSecret" class="form-label">المفتاح السري للتوقيع (اختياري)</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="webhookSecret" placeholder="اتركه فارغاً إذا كنت لا ترغب في استخدام التوقيع">
+                                        <button class="btn btn-outline-secondary" type="button" id="generateSecret">إنشاء</button>
+                                    </div>
+                                    <div class="form-text">المفتاح السري يساعد على التحقق من أن البيانات الواردة تأتي فعلاً من n8n</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">أمثلة على الإجراءات التي يمكن إرسالها:</label>
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6>إرسال رسالة نصية</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <pre class="bg-light p-2"><code>{
+  "action": "send_message",
+  "phone": "971501234567",
+  "message": "مرحباً! هذه رسالة من n8n."
+}</code></pre>
+                                        </div>
+                                    </div>
+
+                                    <div class="card mt-2">
+                                        <div class="card-header">
+                                            <h6>إرسال صورة أو ملف</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <pre class="bg-light p-2"><code>{
+  "action": "send_media",
+  "phone": "971501234567",
+  "url": "https://example.com/image.jpg",
+  "caption": "وصف الصورة"
+}</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- حقول تكامل CRM -->
+                        <div id="crmFields" class="d-none integration-fields">
+                            <div class="mb-3">
+                                <label for="crmIntegrationName" class="form-label">اسم التكامل</label>
+                                <input type="text" class="form-control" id="crmIntegrationName" placeholder="مثال: تكامل HubSpot" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="crmDeviceId" class="form-label">الجهاز</label>
+                                <select class="form-select" id="crmDeviceId" required>
+                                    <option value="" selected disabled>اختر الجهاز</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="crmProvider" class="form-label">مزود CRM</label>
+                                <select class="form-select" id="crmProvider" required>
+                                    <option value="" selected disabled>اختر مزود CRM</option>
+                                    <option value="hubspot">HubSpot</option>
+                                    <option value="salesforce">Salesforce</option>
+                                    <option value="zoho">Zoho CRM</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="crmApiKey" class="form-label">مفتاح API</label>
+                                <input type="text" class="form-control" id="crmApiKey" placeholder="أدخل مفتاح API الخاص بـ CRM" required>
+                                <div class="form-text">يمكنك الحصول على مفتاح API من لوحة تحكم نظام CRM الخاص بك</div>
+                            </div>
+
+                            <div id="salesforceFields" class="d-none">
+                                <div class="mb-3">
+                                    <label for="salesforceInstanceUrl" class="form-label">رابط مثيل Salesforce</label>
+                                    <input type="url" class="form-control" id="salesforceInstanceUrl" placeholder="مثال: https://yourcompany.my.salesforce.com">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="crmSyncDirection" class="form-label">اتجاه المزامنة</label>
+                                <select class="form-select" id="crmSyncDirection" required>
+                                    <option value="bidirectional" selected>ثنائي الاتجاه</option>
+                                    <option value="toWhatsApp">من CRM إلى واتساب</option>
+                                    <option value="fromWhatsApp">من واتساب إلى CRM</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="crmContactsSync" checked>
+                                    <label class="form-check-label" for="crmContactsSync">
+                                        مزامنة جهات الاتصال
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="crmMessageSync" checked>
+                                    <label class="form-check-label" for="crmMessageSync">
+                                        مزامنة الرسائل
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="crmSyncInterval" class="form-label">فترة المزامنة</label>
+                                <select class="form-select" id="crmSyncInterval" required>
+                                    <option value="5" selected>كل 5 دقائق</option>
+                                    <option value="15">كل 15 دقيقة</option>
+                                    <option value="30">كل 30 دقيقة</option>
+                                    <option value="60">كل ساعة</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- حقول تكامل البريد الإلكتروني -->
+                        <div id="emailFields" class="d-none integration-fields">
+                            <div class="mb-3">
+                                <label for="emailIntegrationName" class="form-label">اسم التكامل</label>
+                                <input type="text" class="form-control" id="emailIntegrationName" placeholder="مثال: تكامل Mailchimp" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailDeviceId" class="form-label">الجهاز</label>
+                                <select class="form-select" id="emailDeviceId" required>
+                                    <option value="" selected disabled>اختر الجهاز</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailProvider" class="form-label">منصة البريد الإلكتروني</label>
+                                <select class="form-select" id="emailProvider" required>
+                                    <option value="" selected disabled>اختر منصة البريد الإلكتروني</option>
+                                    <option value="mailchimp">Mailchimp</option>
+                                    <option value="sendgrid">SendGrid</option>
+                                    <option value="sendinblue">Sendinblue</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailApiKey" class="form-label">مفتاح API</label>
+                                <input type="text" class="form-control" id="emailApiKey" placeholder="أدخل مفتاح API" required>
+                                <div class="form-text">يمكنك الحصول على مفتاح API من إعدادات حسابك</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailListId" class="form-label">معرف القائمة</label>
+                                <input type="text" class="form-control" id="emailListId" placeholder="معرف قائمة المشتركين" required>
+                                <div class="form-text">معرف القائمة التي ستتم مزامنة جهات الاتصال معها</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailSyncContacts" checked>
+                                    <label class="form-check-label" for="emailSyncContacts">
+                                        مزامنة جهات الاتصال من واتساب
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="emailSendCampaigns" checked>
+                                    <label class="form-check-label" for="emailSendCampaigns">
+                                        إرسال حملات البريد الإلكتروني عبر واتساب
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailCampaignTag" class="form-label">علامة الحملة</label>
+                                <input type="text" class="form-control" id="emailCampaignTag" placeholder="مثال: whatsapp" value="whatsapp">
+                                <div class="form-text">سيتم إرسال الحملات التي تحمل هذه العلامة عبر واتساب</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailSyncInterval" class="form-label">فترة المزامنة</label>
+                                <select class="form-select" id="emailSyncInterval" required>
+                                    <option value="15" selected>كل 15 دقيقة</option>
+                                    <option value="30">كل 30 دقيقة</option>
+                                    <option value="60">كل ساعة</option>
+                                    <option value="360">كل 6 ساعات</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- حقول تكامل الذكاء الاصطناعي -->
+                        <div id="aiFields" class="d-none integration-fields">
+                            <div class="mb-3">
+                                <label for="aiIntegrationName" class="form-label">اسم التكامل</label>
+                                <input type="text" class="form-control" id="aiIntegrationName" placeholder="مثال: مساعد الرد التلقائي" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aiDeviceId" class="form-label">الجهاز</label>
+                                <select class="form-select" id="aiDeviceId" required>
+                                    <option value="" selected disabled>اختر الجهاز</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aiProvider" class="form-label">مزود الذكاء الاصطناعي</label>
+                                <select class="form-select" id="aiProvider" required>
+                                    <option value="" selected disabled>اختر مزود الذكاء الاصطناعي</option>
+                                    <option value="openai">OpenAI (ChatGPT)</option>
+                                    <option value="dialogflow">Dialogflow</option>
+                                    <option value="custom">API مخصص</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aiApiKey" class="form-label">مفتاح API</label>
+                                <input type="text" class="form-control" id="aiApiKey" placeholder="أدخل مفتاح API" required>
+                            </div>
+
+                            <div id="openaiFields">
+                                <div class="mb-3">
+                                    <label for="aiModel" class="form-label">نموذج AI</label>
+                                    <select class="form-select" id="aiModel">
+                                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                        <option value="gpt-4">GPT-4</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="dialogflowFields" class="d-none">
+                                <div class="mb-3">
+                                    <label for="aiProjectId" class="form-label">معرف المشروع</label>
+                                    <input type="text" class="form-control" id="aiProjectId" placeholder="معرف مشروع Dialogflow">
+                                </div>
+                            </div>
+
+                            <div id="customAiFields" class="d-none">
+                                <div class="mb-3">
+                                    <label for="aiCustomUrl" class="form-label">رابط API المخصص</label>
+                                    <input type="url" class="form-control" id="aiCustomUrl" placeholder="https://your-custom-ai-api.com/endpoint">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="aiCustomAuth" class="form-label">رمز المصادقة (اختياري)</label>
+                                    <input type="text" class="form-control" id="aiCustomAuth" placeholder="رمز المصادقة أو أي معلومات أخرى للمصادقة">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aiSystemPrompt" class="form-label">النص التوجيهي</label>
+                                <textarea class="form-control" id="aiSystemPrompt" rows="3" placeholder="أدخل النص التوجيهي الذي سيحدد سلوك الذكاء الاصطناعي">أنت مساعد ودود وفعال يرد على أسئلة العملاء عبر واتساب. كن مختصراً ومفيداً.</textarea>
+                                <div class="form-text">النص التوجيهي يحدد شخصية الذكاء الاصطناعي وأسلوبه في الرد</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="aiTriggerWords" class="form-label">الكلمات المفعّلة</label>
+                                <input type="text" class="form-control" id="aiTriggerWords" placeholder="الكلمات مفصولة بفواصل" value="bot, مساعد, بوت, آلي">
+                                <div class="form-text">الكلمات التي ستؤدي إلى تفعيل الرد التلقائي</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aiAutoReply" checked>
+                                    <label class="form-check-label" for="aiAutoReply">
+                                        الرد التلقائي على جميع الرسائل
+                                    </label>
+                                    <div class="form-text">إذا تم تعطيل هذا الخيار، سيتم الرد فقط عند ذكر الكلمات المفعّلة</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="aiReplyToGroups">
+                                    <label class="form-check-label" for="aiReplyToGroups">
+                                        الرد في مجموعات واتساب
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="saveIntegration">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة عرض تفاصيل التكامل -->
+    <div class="modal fade" id="integrationDetailsModal" tabindex="-1" aria-labelledby="integrationDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="integrationDetailsModalLabel">تفاصيل التكامل</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body" id="integrationDetailsBody">
+                    <!-- سيتم ملء المحتوى ديناميكياً -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <button type="button" class="btn btn-danger" id="deleteIntegration">حذف</button>
+                    <button type="button" class="btn btn-success" id="runIntegrationNow">تشغيل الآن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="integration.js"></script>
+</body>
+</html>

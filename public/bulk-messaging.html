@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إرسال رسائل جماعية - WhatsApp Service</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .progress {
+            height: 25px;
+        }
+        
+        .message-preview {
+            border: 1px solid #ced4da;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        
+        .delay-slider {
+            width: 100%;
+        }
+        
+        .token {
+            background-color: #e9ecef;
+            border-radius: 3px;
+            padding: 2px 5px;
+            margin: 0 2px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">WhatsApp Service</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="devices.html">الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="chats.html">المحادثات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contacts.html">جهات الاتصال</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="bulk-messaging.html">الرسائل الجماعية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="integration.html">التكامل</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <h2>
+                    <i class="bi bi-people-fill text-success"></i> 
+                    إرسال رسائل جماعية
+                </h2>
+                <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-phone-fill"></i> اختر الجهاز
+                    </div>
+                    <div class="card-body">
+                        <select id="deviceSelect" class="form-select mb-3">
+                            <option value="">اختر جهازاً...</option>
+                        </select>
+                        <div class="device-status mt-2" id="deviceStatus">
+                            <!-- ستظهر هنا حالة الجهاز -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-people"></i> المستلمون
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="recipientsTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="manual-tab" data-bs-toggle="tab" href="#manual">إدخال يدوي</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="excel-tab" data-bs-toggle="tab" href="#excel">استيراد من Excel</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-3">
+                            <div class="tab-pane fade show active" id="manual">
+                                <div class="mb-3">
+                                    <label for="manualNumbers" class="form-label">أرقام الهواتف (كل رقم في سطر منفصل)</label>
+                                    <textarea id="manualNumbers" class="form-control" rows="6" placeholder="966512345678&#10;966598765432"></textarea>
+                                    <div class="form-text">
+                                        أدخل الأرقام بالتنسيق الدولي مع رمز البلد، مثل: 966501234567 للسعودية. 
+                                        لا تضف رموز + أو مسافات.
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="namePrefix" class="form-label">إضافة اسم (اختياري)</label>
+                                        <input type="text" id="namePrefix" class="form-control" placeholder="الاسم">
+                                    </div>
+                                </div>
+                                <button id="addManualNumbers" class="btn btn-success">
+                                    <i class="bi bi-plus-circle"></i> إضافة الأرقام
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="excel">
+                                <div class="mb-3">
+                                    <label for="excelFile" class="form-label">ملف Excel</label>
+                                    <input type="file" id="excelFile" class="form-control" accept=".xlsx, .xls, .csv">
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-text">
+                                        يجب أن يحتوي الملف على عمود للأرقام (إجباري) وأعمدة أخرى اختيارية للبيانات الشخصية
+                                    </div>
+                                </div>
+                                <div id="excelColumnsContainer" class="mb-3 d-none">
+                                    <label class="form-label">تحديد الأعمدة</label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="phoneColumn" class="form-label">عمود رقم الهاتف</label>
+                                            <select id="phoneColumn" class="form-select">
+                                                <!-- ستضاف الخيارات بالجافا سكربت -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="nameColumn" class="form-label">عمود الاسم (اختياري)</label>
+                                            <select id="nameColumn" class="form-select">
+                                                <option value="">-- لا يوجد --</option>
+                                                <!-- ستضاف الخيارات بالجافا سكربت -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="importExcelBtn" class="btn btn-success" disabled>
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> استيراد البيانات
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h6 class="mb-3">
+                            قائمة المستلمين 
+                            <span class="badge bg-success" id="recipientsCount">0</span>
+                            <button id="clearRecipients" class="btn btn-sm btn-outline-danger float-start">
+                                <i class="bi bi-trash"></i> مسح القائمة
+                            </button>
+                        </h6>
+                        <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                            <table class="table table-sm table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>رقم الهاتف</th>
+                                        <th>الاسم</th>
+                                        <th>بيانات إضافية</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recipientsList">
+                                    <!-- ستضاف الصفوف بالجافا سكربت -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-chat-text-fill"></i> محتوى الرسالة
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="messageTemplate" class="form-label">نص الرسالة</label>
+                            <textarea id="messageTemplate" class="form-control" rows="6" placeholder="أهلاً {name}، نرحب بك في خدماتنا."></textarea>
+                            <div class="form-text mt-2">
+                                يمكنك استخدام العناصر التالية للتخصيص:
+                                <span class="token">{name}</span>
+                                <span class="token">{firstName}</span>
+                                <span class="token">{lastName}</span>
+                                <span class="token">{date}</span>
+                                <span class="token">{time}</span>
+                                وأي بيانات إضافية من ملف Excel
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mediaUrl" class="form-label">رابط وسائط متعددة (اختياري)</label>
+                            <input type="text" id="mediaUrl" class="form-control" placeholder="https://example.com/image.jpg">
+                            <div class="form-text">يمكنك إضافة رابط لصورة، فيديو، أو ملف PDF</div>
+                        </div>
+                        <!-- إضافة خيار لتحديد ما إذا كان يتم إرسال نص مع الصورة أم لا -->
+                        <div class="mb-3" id="mediaTextOptionsContainer">
+                            <label class="form-label">خيارات النص مع الصورة</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mediaTextOption" id="withTextOption" value="withText" checked>
+                                <label class="form-check-label" for="withTextOption">
+                                    إرسال النص مع الصورة
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mediaTextOption" id="withoutTextOption" value="withoutText">
+                                <label class="form-check-label" for="withoutTextOption">
+                                    إرسال الصورة بدون نص
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">معاينة الرسالة</label>
+                            <div class="message-preview" id="messagePreview">
+                                <!-- ستظهر هنا معاينة الرسالة -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-gear-fill"></i> إعدادات الإرسال
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="delaySlider" class="form-label">
+                                الفترة الزمنية بين الرسائل: 
+                                <span id="delayValue">2</span> ثانية
+                            </label>
+                            <input type="range" class="form-range delay-slider" id="delaySlider" min="1" max="10" step="1" value="2">
+                            <div class="form-text">
+                                زيادة الفترة الزمنية تقلل من احتمالية الحظر من واتساب
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-grid">
+                            <button id="sendBulkMessages" class="btn btn-lg btn-success" disabled>
+                                <i class="bi bi-send-fill"></i> بدء الإرسال
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4 d-none" id="jobStatusCard">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-bar-chart-line"></i> حالة الإرسال
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">تقدم الإرسال:</label>
+                            <div class="progress">
+                                <div id="sendingProgress" class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">إجمالي الرسائل:</label>
+                                    <h3 id="totalMessageCount">0</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">الرسائل المرسلة:</label>
+                                    <h3 id="sentMessageCount" class="text-success">0</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">الرسائل الفاشلة:</label>
+                                    <h3 id="failedMessageCount" class="text-danger">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">حالة المهمة:</label>
+                            <h4 id="jobStatus">جاري الإرسال...</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+    <script src="bulk-messaging.js"></script>
+</body>
+
+</html>

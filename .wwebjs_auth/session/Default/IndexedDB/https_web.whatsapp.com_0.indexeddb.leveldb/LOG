@@ -1,0 +1,21 @@
+2025/04/13-19:28:40.792 77dc Reusing MANIFEST C:\Users\ALBAR\OneDrive\سطح المكتب\projct\wts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/04/13-19:28:40.792 77dc Recovering log #99
+2025/04/13-19:28:40.801 77dc Reusing old log C:\Users\ALBAR\OneDrive\سطح المكتب\projct\wts\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000099.log 
+2025/04/13-19:28:40.801 77dc Delete type=2 #98
+2025/04/13-19:28:45.348 33f0 Level-0 table #104: started
+2025/04/13-19:28:45.354 33f0 Level-0 table #104: 71320 bytes OK
+2025/04/13-19:28:45.355 33f0 Delete type=0 #99
+2025/04/13-19:28:45.358 33f0 Manual compaction at level-0 from '\x00-\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00.\x00\x00\x00' @ 0 : 0; will stop at '\x00-\x00\x00\x05' @ 191537 : 1
+2025/04/13-19:28:45.358 33f0 Compacting 1@0 + 1@1 files
+2025/04/13-19:28:45.485 33f0 Generated table #105@0: 100056 keys, 2150444 bytes
+2025/04/13-19:28:45.485 33f0 Compacted 1@0 + 1@1 files => 2150444 bytes
+2025/04/13-19:28:45.486 33f0 compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/04/13-19:28:45.486 33f0 Delete type=2 #104
+2025/04/13-19:28:45.487 33f0 Manual compaction at level-0 from '\x00-\x00\x00\x05' @ 191537 : 1 .. '\x00.\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/04/13-19:35:45.081 77dc Compacting 1@1 + 1@2 files
+2025/04/13-19:35:45.151 77dc Generated table #106@1: 39422 keys, 1653918 bytes
+2025/04/13-19:35:45.151 77dc Compacted 1@1 + 1@2 files => 1653918 bytes
+2025/04/13-19:35:45.152 77dc compacted to: files[ 0 0 1 0 0 0 0 ]
+2025/04/13-19:35:45.152 77dc Delete type=2 #54
+2025/04/13-19:35:45.152 77dc Delete type=2 #101
+2025/04/13-19:35:45.152 77dc Delete type=2 #105

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خادم WhatsApp</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { 
+            background-color: #f0f4f8; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .dashboard-title {
+            color: #128C7E;
+            font-weight: 600;
+        }
+        
+        .stats-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: #128C7E;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        .status-indicator.online { background-color: #4CAF50; }
+        .status-indicator.offline { background-color: #F44336; }
+        
+        .sidebar {
+            background-color: #075E54;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .sidebar-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: #fff;
+            border-right: 3px solid #25D366;
+        }
+        
+        .content-area {
+            padding: 20px;
+        }
+        
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #075E54;
+        }
+        
+        .card-title {
+            color: #555;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .version-info {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .update-badge {
+            cursor: pointer;
+        }
+        
+        .update-progress {
+            height: 5px;
+            margin-top: 8px;
+        }
+        
+        .update-notification {
+            max-width: 300px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- القائمة الجانبية -->
+            <div class="col-md-3 col-lg-2 sidebar p-0">
+                <div class="d-flex justify-content-center align-items-center py-4">
+                    <h3>خادم WhatsApp</h3>
+                </div>
+                <div class="nav flex-column">
+                    <a href="#" class="sidebar-link active">
+                        <i class="bi bi-speedometer2 me-2"></i> لوحة التحكم
+                    </a>
+                    <a href="/devices.html" class="sidebar-link">
+                        <i class="bi bi-phone me-2"></i> الأجهزة
+                    </a>
+                    <a href="/chats.html" class="sidebar-link">
+                        <i class="bi bi-chat-dots me-2"></i> المحادثات
+                    </a>
+                    <a href="/contacts.html" class="sidebar-link">
+                        <i class="bi bi-person-rolodex me-2"></i> جهات الاتصال
+                    </a>
+                    <a href="/bulk-messaging.html" class="sidebar-link">
+                        <i class="bi bi-envelope-paper me-2"></i> الرسائل الجماعية
+                    </a>
+                    <a href="/integration.html" class="sidebar-link">
+                        <i class="bi bi-code-slash me-2"></i> التكاملات
+                    </a>
+                    <a href="/ai-response.html" class="sidebar-link">
+                        <i class="bi bi-robot me-2"></i> الرد الآلي
+                    </a>
+                </div>
+                <div class="mt-auto p-3 position-absolute bottom-0 start-0 end-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="version-info">
+                            الإصدار <span id="app-version">1.0.0</span>
+                        </div>
+                        <div id="update-status" class="update-badge d-none">
+                            <span class="badge bg-warning rounded-pill" id="update-badge" title="تحديث جديد متاح">
+                                <i class="bi bi-arrow-down-circle"></i> تحديث
+                            </span>
+                        </div>
+                    </div>
+                    <div class="progress update-progress d-none" id="update-progress-bar">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" id="update-progress-value" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المحتوى الرئيسي -->
+            <div class="col-md-9 col-lg-10 content-area">
+                <div class="container">
+                    <div class="row mb-4">
+                        <div class="col">
+                            <h1 class="dashboard-title">لوحة التحكم</h1>
+                            <p class="text-muted">اطلع على أحدث إحصائيات واتساب</p>
+                        </div>
+                    </div>
+                    
+                    <!-- حالة الخادم -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>حالة الخادم</h5>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        <div>
+                                            <span class="status-indicator" id="server-status"></span>
+                                            الخادم
+                                        </div>
+                                        <div>
+                                            <span class="status-indicator" id="whatsapp-status"></span>
+                                            واتساب
+                                        </div>
+                                        <div>
+                                            <span class="status-indicator" id="database-status"></span>
+                                            قاعدة البيانات
+                                        </div>
+                                        <div>
+                                            <span class="status-indicator" id="ai-status"></span>
+                                            خدمة الذكاء الاصطناعي
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- الإحصائيات -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card stats-card h-100">
+                                <div class="card-body text-center py-4">
+                                    <i class="bi bi-phone card-icon mb-3"></i>
+                                    <div class="card-value" id="device-count">0</div>
+                                    <div class="card-title">الأجهزة المتصلة</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card stats-card h-100">
+                                <div class="card-body text-center py-4">
+                                    <i class="bi bi-chat-text card-icon mb-3"></i>
+                                    <div class="card-value" id="message-count">0</div>
+                                    <div class="card-title">الرسائل المرسلة</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card stats-card h-100">
+                                <div class="card-body text-center py-4">
+                                    <i class="bi bi-person card-icon mb-3"></i>
+                                    <div class="card-value" id="contact-count">0</div>
+                                    <div class="card-title">جهات الاتصال</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card stats-card h-100">
+                                <div class="card-body text-center py-4">
+                                    <i class="bi bi-robot card-icon mb-3"></i>
+                                    <div class="card-value" id="ai-count">0</div>
+                                    <div class="card-title">الردود الآلية</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- شرح التطبيق -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>أهلًا بك في واجهة خادم WhatsApp!</h5>
+                                    <p>هذا التطبيق يتيح لك:</p>
+                                    <ul>
+                                        <li>إدارة عدة حسابات واتساب من مكان واحد</li>
+                                        <li>إرسال واستقبال الرسائل برمجياً</li>
+                                        <li>دمج واتساب مع التطبيقات والخدمات الأخرى</li>
+                                        <li>إعداد ردود آلية ذكية على الرسائل</li>
+                                    </ul>
+                                    <p>للبدء، انتقل إلى صفحة <a href="/devices.html">الأجهزة</a> لإضافة حساب جديد.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- إشعار التحديث -->
+    <div class="update-notification card" id="update-notification">
+        <div class="card-body">
+            <h5 class="card-title"><i class="bi bi-arrow-down-circle-fill text-success"></i> تحديث جديد متاح</h5>
+            <p class="card-text">الإصدار <span id="new-version">0.0.0</span> متاح الآن. هل تريد تثبيته؟</p>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-sm btn-secondary me-2" id="dismiss-update">لاحقًا</button>
+                <button class="btn btn-sm btn-success" id="install-update">تثبيت الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // التحقق من حالة الاتصال
+        function fetchServerStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('server-status').className = `status-indicator ${data.server ? 'online' : 'offline'}`;
+                    document.getElementById('whatsapp-status').className = `status-indicator ${data.whatsapp ? 'online' : 'offline'}`;
+                    document.getElementById('database-status').className = `status-indicator ${data.database ? 'online' : 'offline'}`;
+                    document.getElementById('ai-status').className = `status-indicator ${data.aiService ? 'online' : 'offline'}`;
+                })
+                .catch(error => {
+                    console.error('خطأ في جلب حالة الخادم:', error);
+                    // تعيين جميع المؤشرات إلى وضع عدم الاتصال
+                    document.querySelectorAll('.status-indicator').forEach(indicator => {
+                        indicator.className = 'status-indicator offline';
+                    });
+                });
+        }
+
+        // جلب إحصائيات لوحة التحكم
+        function fetchDashboardStats() {
+            fetch('/api/dashboard/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('device-count').textContent = data.devices;
+                    document.getElementById('message-count').textContent = data.messages;
+                    document.getElementById('contact-count').textContent = data.contacts;
+                    document.getElementById('ai-count').textContent = data.aiResponses;
+                })
+                .catch(error => {
+                    console.error('خطأ في جلب الإحصائيات:', error);
+                });
+        }
+
+        // التعامل مع التحديثات التلقائية (إذا كان التطبيق يعمل في بيئة Electron)
+        if (window.electron) {
+            const updateStatusBadge = document.getElementById('update-status');
+            const updateNotification = document.getElementById('update-notification');
+            const dismissUpdateBtn = document.getElementById('dismiss-update');
+            const installUpdateBtn = document.getElementById('install-update');
+            const updateProgressBar = document.getElementById('update-progress-bar');
+            const updateProgressValue = document.getElementById('update-progress-value');
+            
+            // الحصول على معلومات الإصدار الحالي
+            window.electron.getVersionInfo().then(info => {
+                document.getElementById('app-version').textContent = info.version;
+            });
+
+            // التحقق من وجود تحديثات بشكل دوري
+            window.electron.checkForUpdates();
+            
+            // استماع لإشعارات التحديث
+            window.electron.onUpdateAvailable(info => {
+                console.log('تحديث متاح:', info);
+                updateStatusBadge.classList.remove('d-none');
+                document.getElementById('new-version').textContent = info.version;
+                updateNotification.style.display = 'block';
+            });
+
+            // معالجة تقدم تنزيل التحديث
+            window.electron.onUpdateProgress(progress => {
+                updateProgressBar.classList.remove('d-none');
+                const percent = Math.round(progress.percent);
+                updateProgressValue.style.width = `${percent}%`;
+                updateProgressValue.textContent = `${percent}%`;
+            });
+
+            // عند اكتمال تنزيل التحديث
+            window.electron.onUpdateDownloaded(info => {
+                updateProgressBar.classList.add('d-none');
+                updateStatusBadge.innerHTML = `<span class="badge bg-success rounded-pill">جاهز للتثبيت</span>`;
+                updateNotification.style.display = 'block';
+            });
+
+            // زر تجاهل التحديث
+            dismissUpdateBtn.addEventListener('click', () => {
+                updateNotification.style.display = 'none';
+            });
+
+            // زر تثبيت التحديث
+            installUpdateBtn.addEventListener('click', () => {
+                window.electron.installUpdate();
+            });
+
+            // التحقق اليدوي من وجود تحديثات عند النقر على شارة الإصدار
+            document.querySelector('.version-info').addEventListener('click', () => {
+                window.electron.checkForUpdates();
+            });
+        }
+
+        // تحديث البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchServerStatus();
+            fetchDashboardStats();
+            
+            // تحديث البيانات كل دقيقة
+            setInterval(() => {
+                fetchServerStatus();
+                fetchDashboardStats();
+            }, 60000);
+        });
+    </script>
+</body>
+</html>

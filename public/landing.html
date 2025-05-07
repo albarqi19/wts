@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Multi Service - نظام متكامل لإدارة WhatsApp</title>
+    <!-- Bootstrap RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .hero {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+            color: white;
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            right: -10%;
+            top: -10%;
+            width: 50%;
+            height: 50%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            z-index: 1;
+        }
+        .hero-logo {
+            margin-bottom: 1.5rem;
+            max-height: 80px;
+            filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            height: 70px;
+            width: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #25D366;
+            background-color: #e9f9ee;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+        }
+        .feature-card {
+            transition: transform 0.3s;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        }
+        .btn-custom {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #1ea952;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+        }
+        .section {
+            padding: 5rem 0;
+        }
+        .section-title {
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #25D366;
+            width: 80px;
+            margin: 0 auto;
+        }
+        .bg-light-green {
+            background-color: #f0fff4;
+        }
+        .testimonial {
+            background-color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        .testimonial-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+        .testimonial-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .faq-accordion .accordion-button:not(.collapsed) {
+            background-color: #e9f9ee;
+            color: #128C7E;
+            box-shadow: none;
+        }
+        .faq-accordion .accordion-button:focus {
+            box-shadow: none;
+        }
+        .demo-image {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        }
+        .ai-screenshot {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        .integration-logo {
+            height: 40px;
+            margin: 10px;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: all 0.3s;
+        }
+        .integration-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+        .feature-tabs .nav-link {
+            color: #495057;
+            border-radius: 6px;
+            margin: 0 5px;
+            padding: 10px 20px;
+        }
+        .feature-tabs .nav-link.active {
+            background-color: #25D366;
+            color: white;
+        }
+        .tab-pane {
+            padding: 2rem 0;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: white;
+        }
+        .stats-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #128C7E;
+        }
+        .hero-shape {
+            position: absolute;
+            z-index: 0;
+            opacity: 0.1;
+        }
+        .hero-shape-1 {
+            bottom: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        .hero-shape-2 {
+            top: -30px;
+            left: -30px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero text-center">
+        <div class="hero-shape hero-shape-1"></div>
+        <div class="hero-shape hero-shape-2"></div>
+        <div class="container position-relative" style="z-index: 10;">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-3">نظام WhatsApp متعدد الخدمات</h1>
+                    <p class="fs-5 my-4 px-lg-5">منصة متكاملة لإدارة وأتمتة WhatsApp مع دعم للرسائل الآلية، والردود الذكية، والتكامل مع أنظمة خارجية متعددة</p>
+                    <div class="mt-5">
+                        <a href="index.html" class="btn btn-custom btn-lg me-3 px-4">الانتقال للنظام <i class="bi bi-arrow-right-circle ms-2"></i></a>
+                        <a href="#features" class="btn btn-outline-light btn-lg">اكتشف المميزات <i class="bi bi-info-circle ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Features -->
+    <section id="features" class="section">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">مميزات النظام الرئيسية</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-chat-square-text"></i>
+                            </div>
+                            <h4 class="card-title">إدارة متكاملة للمحادثات</h4>
+                            <p class="card-text">إدارة جميع محادثات WhatsApp من لوحة تحكم موحدة مع إمكانية تصنيف وحفظ المحادثات المهمة</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-reply-all"></i>
+                            </div>
+                            <h4 class="card-title">الردود الآلية المتقدمة</h4>
+                            <p class="card-text">نظام ردود ذكية متعدد الخيارات بدعم للذكاء الاصطناعي والبيانات الخارجية والقوالب المخصصة</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-puzzle"></i>
+                            </div>
+                            <h4 class="card-title">تكاملات متعددة</h4>
+                            <p class="card-text">ربط سلس مع أنظمة CRM، البريد الإلكتروني، Google Sheets، والمزيد من الأنظمة الخارجية</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integrations Section -->
+    <section class="section bg-light-green">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">تكاملات متنوعة</h2>
+            <p class="text-center mb-5">يتكامل النظام مع العديد من المنصات والخدمات لتوفير تجربة متكاملة</p>
+            
+            <div class="row justify-content-center mb-5">
+                <div class="col-12 text-center">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" alt="Google Sheets" class="integration-logo">
+                    <img src="https://www.svgrepo.com/show/303229/microsoft-sql-server-logo.svg" alt="SQL" class="integration-logo">
+                    <img src="https://cdn.worldvectorlogo.com/logos/salesforce-2.svg" alt="Salesforce" class="integration-logo">
+                    <img src="https://www.svgrepo.com/show/354202/mailchimp-icon.svg" alt="Mailchimp" class="integration-logo">
+                    <img src="https://cdn.worldvectorlogo.com/logos/hubspot.svg" alt="HubSpot" class="integration-logo">
+                    <img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="Cloud APIs" class="integration-logo">
+                    <img src="https://seeklogo.com/images/Z/zoho-logo-38CA053743-seeklogo.com.png" alt="Zoho" class="integration-logo">
+                </div>
+            </div>
+
+            <ul class="nav nav-pills mb-4 justify-content-center feature-tabs" id="integrationTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="crm-tab" data-bs-toggle="tab" data-bs-target="#crm" type="button" role="tab">أنظمة CRM</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">تكامل البريد الإلكتروني</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sheets-tab" data-bs-toggle="tab" data-bs-target="#sheets" type="button" role="tab">Google Sheets</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai" type="button" role="tab">الذكاء الاصطناعي</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="integrationTabsContent">
+                <div class="tab-pane fade show active" id="crm" role="tabpanel">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4>تكامل مع أنظمة CRM</h4>
+                            <p>يوفر النظام تكاملاً سلساً مع منصات CRM الشهيرة مثل Salesforce وHubSpot وZoho CRM:</p>
+                            <ul>
+                                <li>مزامنة جهات الاتصال تلقائياً بين WhatsApp وCRM</li>
+                                <li>تسجيل المحادثات كتذاكر أو مهام في نظام CRM</li>
+                                <li>إرسال تنبيهات CRM عبر WhatsApp للعملاء</li>
+                                <li>تحديث بيانات العملاء في CRM من خلال محادثات WhatsApp</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="demo-image">
+                                <img src="https://cdn.dribbble.com/users/2111828/screenshots/14861106/media/3dae198ed62a1dc76a79fdfd6a7b068a.png" alt="CRM Integration" class="img-fluid ai-screenshot">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="email" role="tabpanel">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4>تكامل البريد الإلكتروني</h4>
+                            <p>ربط سلس بين حملات البريد الإلكتروني والتواصل عبر WhatsApp:</p>
+                            <ul>
+                                <li>تحويل حملات البريد الإلكتروني إلى رسائل WhatsApp</li>
+                                <li>إرسال إشعارات بالبريد الإلكتروني للرسائل المهمة</li>
+                                <li>تكامل مع منصات التسويق الإلكتروني الشهيرة</li>
+                                <li>متابعة تفاعل المستخدمين مع الرسائل وتحليلها</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="demo-image">
+                                <img src="https://cdn.dribbble.com/users/2330950/screenshots/14151452/media/c4ff02519cd3fe7158315249ba93c4e5.png" alt="Email Integration" class="img-fluid ai-screenshot">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="sheets" role="tabpanel">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4>تكامل Google Sheets</h4>
+                            <p>استخدام بيانات Google Sheets بشكل مباشر في نظام المراسلة الخاص بك:</p>
+                            <ul>
+                                <li>استرجاع بيانات العملاء والمنتجات مباشرة من Google Sheets</li>
+                                <li>تخصيص الردود بناءً على بيانات الجداول</li>
+                                <li>تحديث البيانات تلقائياً عند استلام معلومات جديدة</li>
+                                <li>إنشاء ردود ذكية معتمدة على البيانات المخزنة</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="demo-image">
+                                <img src="https://cdn.dribbble.com/users/1139587/screenshots/15167116/media/105db335c2e403a27966971d438de215.png" alt="Google Sheets Integration" class="img-fluid ai-screenshot">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="ai" role="tabpanel">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4>خدمات الذكاء الاصطناعي</h4>
+                            <p>تعزيز تجربة العملاء باستخدام تقنيات الذكاء الاصطناعي المتقدمة:</p>
+                            <ul>
+                                <li>دعم لنماذج متعددة من الذكاء الاصطناعي (Google Gemini، ChatGPT، وغيرها)</li>
+                                <li>فهم وتحليل استفسارات العملاء بلغة طبيعية</li>
+                                <li>تخصيص الردود اعتماداً على سياق المحادثة</li>
+                                <li>تحسين الردود مع مرور الوقت من خلال التعلم الآلي</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="demo-image">
+                                <img src="https://cdn.dribbble.com/users/1214795/screenshots/17071178/media/93db8c9149db54495e1e223f19e51857.png" alt="AI Integration" class="img-fluid ai-screenshot">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">مميزات متقدمة</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-images"></i>
+                            </div>
+                            <h4 class="card-title">دعم الوسائط المتعددة</h4>
+                            <p class="card-text">إرسال واستقبال الصور، الملفات، الفيديو، المستندات، وملفات PDF بشكل آلي وإدارتها في النظام</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-broadcast"></i>
+                            </div>
+                            <h4 class="card-title">الرسائل الجماعية</h4>
+                            <p class="card-text">إرسال رسائل جماعية مخصصة لقوائم مستهدفة مع دعم للوسائط المتعددة وجدولة الإرسال</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-tag"></i>
+                            </div>
+                            <h4 class="card-title">قوالب رسائل مخصصة</h4>
+                            <p class="card-text">إنشاء وحفظ قوالب رسائل مخصصة وإعادة استخدامها مع تخصيص حقول المستخدمين</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <h4 class="card-title">جدولة الرسائل</h4>
+                            <p class="card-text">إنشاء وجدولة الرسائل للإرسال في أوقات محددة مع إمكانية التكرار والتحديث التلقائي</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h4 class="card-title">إدارة جهات الاتصال</h4>
+                            <p class="card-text">تنظيم وتصنيف جهات الاتصال في مجموعات وإضافة بيانات إضافية وملاحظات لكل جهة اتصال</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mx-auto">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <h4 class="card-title">تحليلات وتقارير</h4>
+                            <p class="card-text">تحليلات متقدمة لأداء الردود الآلية والرسائل الجماعية مع إمكانية تصدير التقارير</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Media Support Section -->
+    <section class="section bg-light-green">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">دعم متكامل للوسائط المتعددة</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="mb-5">
+                        <h4 class="mb-3"><i class="bi bi-image text-success me-2"></i> الصور والرسومات</h4>
+                        <p>إرسال واستقبال الصور والرسومات بجودة عالية مع إمكانية إضافة نصوص وتعديلات بسيطة قبل الإرسال</p>
+                    </div>
+                    <div class="mb-5">
+                        <h4 class="mb-3"><i class="bi bi-file-earmark-pdf text-success me-2"></i> المستندات والملفات</h4>
+                        <p>دعم كامل لإرسال واستقبال مختلف أنواع الملفات بما فيها PDF وWord وExcel وغيرها</p>
+                    </div>
+                    <div class="mb-5">
+                        <h4 class="mb-3"><i class="bi bi-camera-video text-success me-2"></i> مقاطع الفيديو</h4>
+                        <p>إرسال واستقبال مقاطع الفيديو مع إمكانية التحكم في جودة الإرسال لتوفير البيانات</p>
+                    </div>
+                    <div>
+                        <h4 class="mb-3"><i class="bi bi-mic text-success me-2"></i> الرسائل الصوتية</h4>
+                        <p>إرسال واستقبال الرسائل الصوتية مع دعم لتحويل الصوت إلى نص للرد بشكل أسرع</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="demo-image text-center">
+                        <img src="https://cdn.dribbble.com/users/4870/screenshots/17539272/media/fcdcdc31ee2f5da7c58acee196b09ba2.jpg" alt="Media Support" class="img-fluid ai-screenshot">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">استخدامات النظام</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title">
+                                <i class="bi bi-headset text-success me-2"></i>
+                                خدمة العملاء
+                            </h4>
+                            <p class="card-text">معالجة استفسارات العملاء بشكل آلي، تحويل المحادثات للموظفين البشريين، متابعة طلبات ما بعد البيع</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title">
+                                <i class="bi bi-shop text-success me-2"></i>
+                                المتاجر والمبيعات
+                            </h4>
+                            <p class="card-text">إدارة عمليات البيع، تقديم معلومات المنتجات، إرسال الكتالوجات، متابعة الطلبات والشحنات</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title">
+                                <i class="bi bi-mortarboard text-success me-2"></i>
+                                التعليم والتدريب
+                            </h4>
+                            <p class="card-text">إرسال المحتوى التعليمي، الرد على استفسارات الطلاب، تنظيم الاختبارات، إرسال التنبيهات الأكاديمية</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 feature-card">
+                        <div class="card-body p-4">
+                            <h4 class="card-title">
+                                <i class="bi bi-hospital text-success me-2"></i>
+                                الرعاية الصحية
+                            </h4>
+                            <p class="card-text">حجز المواعيد، متابعة الحالات، تذكير المرضى بالأدوية، الإجابة على الأسئلة الطبية الشائعة</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="section bg-light-green">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">قوة النظام بالأرقام</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">100+</div>
+                        <p>تكاملات متاحة</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">1000+</div>
+                        <p>رسالة/دقيقة</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">99.9%</div>
+                        <p>نسبة التوافر</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <div class="stats-number">24/7</div>
+                        <p>دعم متواصل</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center section-title fw-bold">الأسئلة الشائعة</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion faq-accordion" id="faqAccordion">
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    ما هي متطلبات تشغيل النظام؟
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    يحتاج النظام إلى خادم ويب يدعم Node.js، اتصال بالإنترنت، وهاتف ذكي أو محاكي لتسجيل حسابات WhatsApp. يمكن تشغيله على أنظمة Windows وLinux وmacOS مع دعم للتشغيل كخدمة نظام أو في حاويات Docker.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    هل يمكن تشغيل أكثر من حساب WhatsApp؟
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    نعم، يدعم النظام تشغيل عدة حسابات WhatsApp في نفس الوقت، مع إمكانية إدارة كل حساب بشكل منفصل وتخصيص الإعدادات المناسبة له.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    كيف يتعامل النظام مع الملفات والصور؟
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    يوفر النظام دعماً كاملاً للوسائط المتعددة بما فيها الصور والمستندات والفيديو والملفات الصوتية. يمكن إرسال هذه الملفات ضمن الردود الآلية أو عبر الرسائل الجماعية، كما يمكن حفظ الملفات المستلمة وتنظيمها في النظام.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item mb-3">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    ما هي خيارات التكامل المتاحة؟
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    يوفر النظام تكاملات مع العديد من الخدمات مثل أنظمة CRM (Salesforce، HubSpot، Zoho)، أنظمة البريد الإلكتروني، Google Sheets، قواعد البيانات SQL، خدمات الذكاء الاصطناعي المختلفة، بالإضافة إلى API مفتوح لتطوير تكاملات مخصصة.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section text-center">
+        <div class="container">
+            <h2 class="fw-bold mb-4">جاهز للبدء؟</h2>
+            <p class="fs-5 mb-5">انتقل الآن إلى نظام WhatsApp متعدد الخدمات واستمتع بتجربة إدارة متكاملة للمراسلات والتكاملات</p>
+            <a href="index.html" class="btn btn-custom btn-lg">الانتقال للنظام <i class="bi bi-arrow-right-circle"></i></a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <h4 class="mt-3">WhatsApp Multi Service</h4>
+                    <p>نظام متكامل لإدارة وأتمتة WhatsApp</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p>جميع الحقوق محفوظة &copy; 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

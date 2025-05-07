@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جهات الاتصال - نظام إدارة واتساب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .contacts-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .contact-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .contact-details {
+            flex: 1;
+        }
+
+        .contact-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .contact-actions button {
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .filters {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .category-badge {
+            background-color: #e9ecef;
+            color: #495057;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .category-badge.client {
+            background-color: #cff4fc;
+            color: #055160;
+        }
+
+        .category-badge.supplier {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .category-badge.lead {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+
+        .category-badge.family {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-link.active {
+            color: white;
+            font-weight: bold;
+        }
+
+        .contact-status {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .contact-status.online {
+            color: #198754;
+        }
+
+        .contact-status i {
+            margin-left: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط القائمة العلوي -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fab fa-whatsapp me-2"></i>
+                نظام إدارة واتساب
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chats">المحادثات</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/contacts">جهات الاتصال</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/devices">الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/integration">التكامل</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div id="connection-status" class="badge bg-warning me-2 d-flex align-items-center">جارِ التحميل...</div>
+                    <button id="logout-btn" class="btn btn-outline-light btn-sm d-none">تسجيل الخروج</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="qrcode-container" class="text-center my-4">
+            <div class="alert alert-info">امسح رمز QR باستخدام تطبيق واتساب على هاتفك</div>
+            <div id="qrcode" class="my-3"></div>
+        </div>
+
+        <div id="contacts-interface" class="d-none">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2>إدارة جهات الاتصال</h2>
+                    <p class="text-muted">قم بتصنيف جهات الاتصال وإدارتها لتسهيل التواصل مع عملائك</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="filters">
+                        <h5 class="mb-3">التصفية</h5>
+                        <div class="mb-3">
+                            <label for="search-contact" class="form-label">بحث</label>
+                            <input type="text" class="form-control" id="search-contact" placeholder="ابحث باسم أو رقم...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">التصنيف</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="all-categories" value="all" checked>
+                                <label class="form-check-label" for="all-categories">
+                                    الكل
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="category-client" value="عميل">
+                                <label class="form-check-label" for="category-client">
+                                    عملاء
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="category-supplier" value="مورد">
+                                <label class="form-check-label" for="category-supplier">
+                                    موردين
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="category-lead" value="محتمل">
+                                <label class="form-check-label" for="category-lead">
+                                    عملاء محتملين
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="category-personal" value="شخصي">
+                                <label class="form-check-label" for="category-personal">
+                                    شخصي
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter" id="category-other" value="عام">
+                                <label class="form-check-label" for="category-other">
+                                    عام
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="contacts-container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="mb-0">جهات الاتصال</h4>
+                            <div>
+                                <span id="contacts-count" class="badge bg-secondary me-2">0</span>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        ترتيب حسب
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item sort-option" data-sort="name" href="#">الاسم (أ-ي)</a></li>
+                                        <li><a class="dropdown-item sort-option" data-sort="name-desc" href="#">الاسم (ي-أ)</a></li>
+                                        <li><a class="dropdown-item sort-option" data-sort="recently" href="#">آخر ظهور</a></li>
+                                        <li><a class="dropdown-item sort-option" data-sort="category" href="#">التصنيف</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="contacts-list">
+                            <div class="loading">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2">جارِ تحميل جهات الاتصال...</p>
+                            </div>
+                        </div>
+
+                        <!-- إضافة أزرار التنقل بين الصفحات -->
+                        <div class="mt-4">
+                            <nav aria-label="تصفح جهات الاتصال">
+                                <ul class="pagination justify-content-center" id="pagination">
+                                    <!-- سيتم إنشاء أزرار الصفحات ديناميكياً -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تحرير جهة اتصال -->
+    <div class="modal fade" id="edit-contact-modal" tabindex="-1" aria-labelledby="editContactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editContactModalLabel">تحرير جهة اتصال</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-contact-form">
+                        <input type="hidden" id="contact-id">
+                        <div class="mb-3">
+                            <label for="contact-name" class="form-label">الاسم</label>
+                            <input type="text" class="form-control" id="contact-name" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-number" class="form-label">رقم الهاتف</label>
+                            <input type="text" class="form-control" id="contact-number" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-category" class="form-label">التصنيف</label>
+                            <select class="form-select" id="contact-category">
+                                <option value="عام">عام</option>
+                                <option value="عميل">عميل</option>
+                                <option value="مورد">مورد</option>
+                                <option value="محتمل">عميل محتمل</option>
+                                <option value="شخصي">شخصي</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contact-notes" class="form-label">ملاحظات</label>
+                            <textarea class="form-control" id="contact-notes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="save-contact-btn">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // تهيئة اتصال Socket.io
+        const socket = io();
+
+        // عناصر الواجهة
+        const qrcodeContainer = document.getElementById('qrcode-container');
+        const qrcodeElement = document.getElementById('qrcode');
+        const contactsInterface = document.getElementById('contacts-interface');
+        const connectionStatus = document.getElementById('connection-status');
+        const logoutBtn = document.getElementById('logout-btn');
+        const contactsList = document.getElementById('contacts-list');
+        const contactsCount = document.getElementById('contacts-count');
+        const searchInput = document.getElementById('search-contact');
+        const categoryFilters = document.querySelectorAll('input[name="categoryFilter"]');
+        const sortOptions = document.querySelectorAll('.sort-option');
+        const pagination = document.getElementById('pagination');
+        
+        // عناصر النموذج
+        const editContactModal = new bootstrap.Modal(document.getElementById('edit-contact-modal'));
+        const contactId = document.getElementById('contact-id');
+        const contactName = document.getElementById('contact-name');
+        const contactNumber = document.getElementById('contact-number');
+        const contactCategory = document.getElementById('contact-category');
+        const contactNotes = document.getElementById('contact-notes');
+        const saveContactBtn = document.getElementById('save-contact-btn');
+
+        // متغيرات
+        let contacts = [];
+        let currentFilter = 'all';
+        let currentSort = 'name';
+        let searchTerm = '';
+        let isAuthenticated = false;
+        let currentPage = 1;
+        const contactsPerPage = 20;
+
+        // فحص ما إذا كان هناك أي أجهزة متصلة عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // جلب حالة الأجهزة
+                const response = await fetch('/api/devices');
+                const result = await response.json();
+                
+                if (result.status && result.data && result.data.length > 0) {
+                    // البحث عن أي جهاز متصل
+                    const connectedDevice = result.data.find(device => 
+                        device.status === 'connected' || 
+                        device.status === 'authenticated' || 
+                        device.currentStatus === 'connected' || 
+                        device.currentStatus === 'authenticated'
+                    );
+                    
+                    if (connectedDevice) {
+                        isAuthenticated = true;
+                        connectionStatus.textContent = 'متصل';
+                        connectionStatus.className = 'badge bg-success me-2 d-flex align-items-center';
+                        qrcodeContainer.classList.add('d-none');
+                        contactsInterface.classList.remove('d-none');
+                        logoutBtn.classList.remove('d-none');
+                        
+                        // جلب جهات الاتصال
+                        fetchContacts();
+                    }
+                }
+            } catch (error) {
+                console.error('خطأ في التحقق من حالة الاتصال:', error);
+            }
+        });
+
+        // عند الاتصال
+        socket.on('connect', () => {
+            connectionStatus.textContent = 'متصل بالخادم';
+            connectionStatus.className = 'badge bg-info me-2 d-flex align-items-center';
+            
+            // إذا كنا مصادقين بالفعل، جلب البيانات مباشرة
+            if (isAuthenticated) {
+                fetchContacts();
+            }
+        });
+
+        // استقبال رمز QR
+        socket.on('qr', (qrImage) => {
+            qrcodeElement.innerHTML = `<img src="${qrImage}" alt="رمز QR">`;
+            qrcodeContainer.classList.remove('d-none');
+            contactsInterface.classList.add('d-none');
+            connectionStatus.textContent = 'في انتظار المسح';
+            connectionStatus.className = 'badge bg-warning me-2 d-flex align-items-center';
+            logoutBtn.classList.add('d-none');
+        });
+
+        // عند المصادقة
+        socket.on('authenticated', (info) => {
+            isAuthenticated = true;
+            connectionStatus.textContent = 'متصل';
+            connectionStatus.className = 'badge bg-success me-2 d-flex align-items-center';
+            qrcodeContainer.classList.add('d-none');
+            contactsInterface.classList.remove('d-none');
+            logoutBtn.classList.remove('d-none');
+            
+            // جلب جهات الاتصال
+            fetchContacts();
+        });
+
+        // استماع إلى تحديثات حالة الأجهزة
+        socket.on('device_status_update', (deviceInfo) => {
+            if (deviceInfo.status === 'authenticated' || deviceInfo.status === 'connected') {
+                isAuthenticated = true;
+                connectionStatus.textContent = 'متصل';
+                connectionStatus.className = 'badge bg-success me-2 d-flex align-items-center';
+                qrcodeContainer.classList.add('d-none');
+                contactsInterface.classList.remove('d-none');
+                logoutBtn.classList.remove('d-none');
+                
+                // جلب جهات الاتصال
+                fetchContacts();
+            } else if (deviceInfo.status === 'disconnected' || deviceInfo.status === 'auth_failure') {
+                isAuthenticated = false;
+            }
+        });
+
+        // عند فشل المصادقة
+        socket.on('auth_failure', (message) => {
+            isAuthenticated = false;
+            connectionStatus.textContent = 'فشل في المصادقة';
+            connectionStatus.className = 'badge bg-danger me-2 d-flex align-items-center';
+            qrcodeContainer.classList.remove('d-none');
+            contactsInterface.classList.add('d-none');
+            logoutBtn.classList.add('d-none');
+        });
+
+        // عند انقطاع الاتصال
+        socket.on('disconnected', (reason) => {
+            // نتحقق إذا كان هناك أجهزة أخرى متصلة قبل تغيير الحالة
+            if (!isAuthenticated) {
+                connectionStatus.textContent = 'غير متصل';
+                connectionStatus.className = 'badge bg-danger me-2 d-flex align-items-center';
+                qrcodeContainer.classList.remove('d-none');
+                contactsInterface.classList.add('d-none');
+                logoutBtn.classList.add('d-none');
+            }
+        });
+
+        // جلب جهات الاتصال
+        async function fetchContacts() {
+            // تعرض حالة تحميل البيانات
+            contactsList.innerHTML = `
+                <div class="loading">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2">جارِ تحميل جهات الاتصال...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('/api/contacts');
+                const result = await response.json();
+                
+                if (result.status) {
+                    // معالجة البيانات بناءً على التنسيق المستلم
+                    let contactsList = [];
+                    const data = result.data;
+                    
+                    if (Array.isArray(data)) {
+                        // إذا كانت البيانات عبارة عن مصفوفة (من جهاز واحد)
+                        contactsList = data;
+                    } else if (typeof data === 'object') {
+                        // إذا كانت البيانات عبارة عن كائن يحتوي على مصفوفات لكل جهاز
+                        for (const deviceId in data) {
+                            if (Array.isArray(data[deviceId])) {
+                                contactsList = contactsList.concat(data[deviceId]);
+                            }
+                        }
+                    }
+                    
+                    // تعيين جهات الاتصال المعالجة في المتغير العام
+                    contacts = contactsList;
+                    renderContacts();
+                } else {
+                    showEmptyState('حدث خطأ في جلب جهات الاتصال');
+                }
+            } catch (error) {
+                console.error('خطأ في جلب جهات الاتصال:', error);
+                showEmptyState('حدث خطأ في جلب جهات الاتصال');
+            }
+        }
+
+        // عرض جهات الاتصال
+        function renderContacts() {
+            // تطبيق الفلترة
+            let filteredContacts = contacts;
+            
+            // فلترة حسب البحث
+            if (searchTerm) {
+                filteredContacts = filteredContacts.filter(contact => {
+                    return (
+                        (contact.name && contact.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                        (contact.number && contact.number.includes(searchTerm))
+                    );
+                });
+            }
+            
+            // فلترة حسب التصنيف
+            if (currentFilter !== 'all') {
+                filteredContacts = filteredContacts.filter(contact => contact.category === currentFilter);
+            }
+            
+            // ترتيب جهات الاتصال
+            filteredContacts = sortContacts(filteredContacts, currentSort);
+            
+            // تحديث عدد جهات الاتصال
+            contactsCount.textContent = filteredContacts.length;
+            
+            // تقسيم جهات الاتصال إلى صفحات
+            const totalPages = Math.ceil(filteredContacts.length / contactsPerPage);
+            const startIndex = (currentPage - 1) * contactsPerPage;
+            const endIndex = startIndex + contactsPerPage;
+            const paginatedContacts = filteredContacts.slice(startIndex, endIndex);
+            
+            // عرض جهات الاتصال
+            contactsList.innerHTML = '';
+            
+            if (paginatedContacts.length === 0) {
+                showEmptyState('لا توجد جهات اتصال مطابقة');
+                return;
+            }
+            
+            paginatedContacts.forEach(contact => {
+                const contactItem = document.createElement('div');
+                contactItem.className = 'contact-item';
+                
+                // تحديد لون التصنيف
+                let categoryClass = '';
+                switch (contact.category) {
+                    case 'عميل':
+                        categoryClass = 'client';
+                        break;
+                    case 'مورد':
+                        categoryClass = 'supplier';
+                        break;
+                    case 'محتمل':
+                        categoryClass = 'lead';
+                        break;
+                    case 'شخصي':
+                        categoryClass = 'family';
+                        break;
+                }
+                
+                const lastSeen = contact.lastSeen ? formatLastSeen(contact.lastSeen) : 'غير متصل';
+                const isOnline = contact.lastSeen && (Date.now() / 1000 - contact.lastSeen) < 300; // اعتبار المستخدم متصل إذا كان آخر ظهور خلال 5 دقائق
+                
+                contactItem.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <div class="contact-avatar me-3">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="mb-0">${contact.name || 'بدون اسم'}</h5>
+                                <span class="category-badge ${categoryClass}">${contact.category || 'عام'}</span>
+                            </div>
+                            <div class="text-muted">${contact.number || ''}</div>
+                            <div class="contact-status ${isOnline ? 'online' : ''}">
+                                <i class="fas ${isOnline ? 'fa-circle' : 'fa-circle-dot'}"></i>
+                                ${lastSeen}
+                            </div>
+                            ${contact.notes ? `<div class="small mt-1">${contact.notes}</div>` : ''}
+                        </div>
+                        <div class="contact-actions ms-3">
+                            <button class="btn btn-sm btn-outline-primary edit-contact" data-id="${contact.id}" title="تحرير">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success send-message" data-id="${contact.id}" title="إرسال رسالة">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // إضافة حدث النقر على زر التحرير
+                contactItem.querySelector('.edit-contact').addEventListener('click', () => openEditModal(contact));
+                
+                // إضافة حدث النقر على زر إرسال رسالة
+                contactItem.querySelector('.send-message').addEventListener('click', () => {
+                    window.location.href = `/chats?id=${contact.id}`;
+                });
+                
+                contactsList.appendChild(contactItem);
+            });
+            
+            // تحديث أزرار التصفح
+            renderPagination(totalPages);
+        }
+
+        // عرض أزرار التصفح
+        function renderPagination(totalPages) {
+            pagination.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return; // لا داعي لعرض أزرار التصفح إذا كانت هناك صفحة واحدة فقط
+            }
+            
+            // إضافة زر "السابق"
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" aria-label="السابق"><span aria-hidden="true">&raquo;</span></a>`;
+            
+            if (currentPage > 1) {
+                prevItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage--;
+                    renderContacts();
+                });
+            }
+            
+            pagination.appendChild(prevItem);
+            
+            // الحد الأقصى لعدد أزرار الصفحات المعروضة
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // تعديل بداية ونهاية النطاق إذا لزم الأمر
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // إضافة زر الصفحة الأولى إذا لم تكن ضمن النطاق المعروض
+            if (startPage > 1) {
+                const firstPageItem = document.createElement('li');
+                firstPageItem.className = 'page-item';
+                firstPageItem.innerHTML = `<a class="page-link" href="#">1</a>`;
+                
+                firstPageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = 1;
+                    renderContacts();
+                });
+                
+                pagination.appendChild(firstPageItem);
+                
+                // إضافة "..." إذا كانت الصفحة الأولى ليست مجاورة للنطاق المعروض
+                if (startPage > 2) {
+                    const ellipsisItem = document.createElement('li');
+                    ellipsisItem.className = 'page-item disabled';
+                    ellipsisItem.innerHTML = `<a class="page-link" href="#">...</a>`;
+                    pagination.appendChild(ellipsisItem);
+                }
+            }
+            
+            // إضافة أزرار الصفحات ضمن النطاق المحدد
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                
+                pageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = i;
+                    renderContacts();
+                });
+                
+                pagination.appendChild(pageItem);
+            }
+            
+            // إضافة "..." وزر الصفحة الأخيرة إذا لم تكن الصفحة الأخيرة ضمن النطاق المعروض
+            if (endPage < totalPages) {
+                // إضافة "..." إذا كانت الصفحة الأخيرة ليست مجاورة للنطاق المعروض
+                if (endPage < totalPages - 1) {
+                    const ellipsisItem = document.createElement('li');
+                    ellipsisItem.className = 'page-item disabled';
+                    ellipsisItem.innerHTML = `<a class="page-link" href="#">...</a>`;
+                    pagination.appendChild(ellipsisItem);
+                }
+                
+                const lastPageItem = document.createElement('li');
+                lastPageItem.className = 'page-item';
+                lastPageItem.innerHTML = `<a class="page-link" href="#">${totalPages}</a>`;
+                
+                lastPageItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = totalPages;
+                    renderContacts();
+                });
+                
+                pagination.appendChild(lastPageItem);
+            }
+            
+            // إضافة زر "التالي"
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" aria-label="التالي"><span aria-hidden="true">&laquo;</span></a>`;
+            
+            if (currentPage < totalPages) {
+                nextItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage++;
+                    renderContacts();
+                });
+            }
+            
+            pagination.appendChild(nextItem);
+        }
+
+        // فتح نموذج تحرير جهة اتصال
+        function openEditModal(contact) {
+            contactId.value = contact.id;
+            contactName.value = contact.name || '';
+            contactNumber.value = contact.number || '';
+            contactCategory.value = contact.category || 'عام';
+            contactNotes.value = contact.notes || '';
+            
+            editContactModal.show();
+        }
+
+        // حفظ تغييرات جهة الاتصال
+        async function saveContactChanges() {
+            try {
+                const data = {
+                    id: contactId.value,
+                    category: contactCategory.value,
+                    notes: contactNotes.value
+                };
+                
+                const response = await fetch('/api/contacts/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status) {
+                    // تحديث جهة الاتصال في المصفوفة المحلية
+                    const contactIndex = contacts.findIndex(c => c.id === data.id);
+                    if (contactIndex !== -1) {
+                        contacts[contactIndex].category = data.category;
+                        contacts[contactIndex].notes = data.notes;
+                    }
+                    
+                    // إعادة عرض جهات الاتصال
+                    renderContacts();
+                    
+                    editContactModal.hide();
+                } else {
+                    alert('حدث خطأ أثناء تحديث جهة الاتصال: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في تحديث جهة الاتصال:', error);
+                alert('حدث خطأ أثناء تحديث جهة الاتصال');
+            }
+        }
+
+        // ترتيب جهات الاتصال
+        function sortContacts(contactsList, sortBy) {
+            return [...contactsList].sort((a, b) => {
+                switch (sortBy) {
+                    case 'name':
+                        return (a.name || '').localeCompare(b.name || '');
+                    case 'name-desc':
+                        return (b.name || '').localeCompare(a.name || '');
+                    case 'recently':
+                        return (b.lastSeen || 0) - (a.lastSeen || 0);
+                    case 'category':
+                        return (a.category || '').localeCompare(b.category || '');
+                    default:
+                        return 0;
+                }
+            });
+        }
+
+        // عرض حالة فارغة
+        function showEmptyState(message = 'لا توجد جهات اتصال') {
+            contactsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="far fa-address-book"></i>
+                    <h5>${message}</h5>
+                    <p class="text-muted">جهات الاتصال ستظهر هنا عندما تكون متاحة</p>
+                </div>
+            `;
+        }
+
+        // تنسيق آخر ظهور
+        function formatLastSeen(timestamp) {
+            if (!timestamp) return 'غير متصل';
+            
+            const lastSeen = new Date(timestamp * 1000);
+            const now = new Date();
+            const diffMs = now - lastSeen;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            const diffDays = Math.floor(diffHours / 24);
+            
+            if (diffMins < 1) {
+                return 'متصل الآن';
+            } else if (diffMins < 60) {
+                return `منذ ${diffMins} دقيقة`;
+            } else if (diffHours < 24) {
+                return `منذ ${diffHours} ساعة`;
+            } else if (diffDays < 7) {
+                return `منذ ${diffDays} يوم`;
+            } else {
+                const day = lastSeen.getDate().toString().padStart(2, '0');
+                const month = (lastSeen.getMonth() + 1).toString().padStart(2, '0');
+                return `${day}/${month}/${lastSeen.getFullYear()}`;
+            }
+        }
+
+        // البحث في جهات الاتصال
+        searchInput.addEventListener('input', function() {
+            searchTerm = this.value.trim();
+            currentPage = 1;
+            renderContacts();
+        });
+
+        // تصفية حسب التصنيف
+        categoryFilters.forEach(filter => {
+            filter.addEventListener('change', function() {
+                if (this.checked) {
+                    currentFilter = this.value;
+                    currentPage = 1;
+                    renderContacts();
+                }
+            });
+        });
+
+        // ترتيب جهات الاتصال
+        sortOptions.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentSort = this.dataset.sort;
+                currentPage = 1;
+                renderContacts();
+            });
+        });
+
+        // حفظ التغييرات
+        saveContactBtn.addEventListener('click', saveContactChanges);
+
+        // تسجيل الخروج
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    // إعادة تحميل الصفحة بعد تسجيل الخروج
+                    window.location.reload();
+                } else {
+                    alert('حدث خطأ أثناء تسجيل الخروج');
+                }
+            } catch (error) {
+                console.error('خطأ في تسجيل الخروج:', error);
+                alert('حدث خطأ أثناء تسجيل الخروج');
+            }
+        });
+
+        // البدء بجلب جهات الاتصال
+        fetchContacts();
+    </script>
+</body>
+</html>

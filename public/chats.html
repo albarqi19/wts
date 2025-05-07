@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المحادثات - نظام إدارة واتساب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 100px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-list {
+            width: 30%;
+            background-color: #f5f5f5;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+        }
+
+        .chat-messages {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            background-color: #e5ddd5;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png');
+            background-repeat: repeat;
+            position: relative;
+        }
+
+        .chat-header {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            max-height: calc(100% - 120px);
+            margin-bottom: 60px;
+        }
+
+        .input-area {
+            background-color: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: #eaeaea;
+        }
+
+        .chat-item.active {
+            background-color: #ddd;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+            font-size: 20px;
+            color: white;
+        }
+
+        .chat-details {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-last-message {
+            color: #777;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-right: 10px;
+        }
+
+        .chat-time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .chat-badge {
+            background-color: #25d366;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .message-meta {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        .message-incoming {
+            background-color: white;
+            margin-left: 0;
+            margin-right: auto;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-top-left-radius: 10px;
+        }
+
+        .message-outgoing {
+            background-color: #dcf8c6;
+            margin-right: 0;
+            margin-left: auto;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .welcome-message {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            color: #777;
+        }
+
+        .welcome-icon {
+            font-size: 5rem;
+            color: #25d366;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-link.active {
+            color: white;
+            font-weight: bold;
+        }
+
+        .device-selector {
+            margin-bottom: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .no-devices-message {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+        }
+
+        /* أنماط مربع حوار الصورة */
+        .image-caption-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .image-caption-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-bottom: 15px;
+        }
+
+        /* For mobile screens */
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+            }
+
+            .chat-list, .chat-messages {
+                width: 100%;
+                height: 50%;
+            }
+
+            .chat-list {
+                height: 40%;
+            }
+
+            .chat-messages {
+                height: 60%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط القائمة العلوي -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fab fa-whatsapp me-2"></i>
+                نظام إدارة واتساب
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/chats">المحادثات</a>
+                    </li>
+                    <!-- Contacts link removed -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/devices">الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/integration">التكامل</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="chat-container">
+            <div class="chat-list">
+                <!-- اختيار الجهاز -->
+                <div class="device-selector">
+                    <label for="device-select" class="form-label">اختر الجهاز:</label>
+                    <select class="form-select" id="device-select">
+                        <option value="">-- اختر جهازًا --</option>
+                        <!-- سيتم إضافة الأجهزة هنا ديناميكيًا -->
+                    </select>
+                </div>
+
+                <!-- مربع البحث -->
+                <div class="search-box">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" id="search-chat" placeholder="بحث في المحادثات...">
+                    </div>
+                </div>
+
+                <!-- قائمة المحادثات -->
+                <div id="chats-list">
+                    <!-- سيتم إضافة المحادثات هنا ديناميكيًا -->
+                    <div class="no-devices-message" id="no-devices-message">
+                        <i class="fas fa-mobile-alt mb-3" style="font-size: 3rem;"></i>
+                        <p>يرجى إضافة جهاز واتساب من صفحة <a href="/devices">إدارة الأجهزة</a> للبدء.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-messages">
+                <!-- رسالة ترحيبية عند عدم فتح أي محادثة -->
+                <div class="welcome-message" id="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h3>مرحبًا بك في نظام إدارة واتساب</h3>
+                    <p>اختر محادثة لبدء الدردشة أو إضافة جهاز جديد من الإعدادات</p>
+                </div>
+
+                <!-- هنا ستظهر رسائل المحادثة عند اختيار محادثة -->
+                <div class="chat-header" id="chat-header" style="display: none;">
+                    <div class="chat-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-name" id="chat-name"></div>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messages-container" style="display: none;">
+                    <!-- سيتم إضافة الرسائل هنا ديناميكيًا -->
+                </div>
+
+                <div class="input-area" id="input-area" style="display: none;">
+                    <button class="btn btn-outline-secondary" id="upload-image-btn" title="إرفاق صورة">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <input type="text" class="form-control mx-2" id="message-input" placeholder="اكتب رسالة...">
+                    <button class="btn btn-primary" id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                    <input type="file" id="image-input" accept="image/*" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مربع حوار إضافة تعليق توضيحي للصورة -->
+    <div id="imageCaptionDialog" class="image-caption-dialog" style="display: none;">
+        <div class="image-caption-content">
+            <h5>إضافة تعليق للصورة</h5>
+            <div class="text-center mb-3">
+                <img id="imagePreview" class="image-preview">
+            </div>
+            <div class="mb-3">
+                <label for="imageCaption" class="form-label">التعليق التوضيحي (اختياري)</label>
+                <textarea id="imageCaption" class="form-control" rows="3" placeholder="أضف تعليقًا للصورة..."></textarea>
+            </div>
+            <div class="d-flex justify-content-between">
+                <button id="cancelImageUpload" class="btn btn-outline-secondary">إلغاء</button>
+                <button id="sendImageWithCaption" class="btn btn-success">إرسال الصورة</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // تهيئة اتصال Socket.io
+        const socket = io();
+        
+        // عناصر واجهة المستخدم
+        const deviceSelect = document.getElementById('device-select');
+        const chatsList = document.getElementById('chats-list');
+        const noDevicesMessage = document.getElementById('no-devices-message');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const chatHeader = document.getElementById('chat-header');
+        const chatName = document.getElementById('chat-name');
+        const messagesContainer = document.getElementById('messages-container');
+        const inputArea = document.getElementById('input-area');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const searchInput = document.getElementById('search-chat');
+        
+        // متغيرات عامة
+        let devices = [];
+        let currentChats = [];
+        let selectedChat = null;
+        let selectedDevice = null;
+        let lastMessageTime = {};
+        
+        // متغيرات جديدة للتعامل مع الصور والتعليقات
+        let currentImageFile = null;
+        const imageCaptionDialog = document.getElementById('imageCaptionDialog');
+        const imagePreview = document.getElementById('imagePreview');
+        const imageCaption = document.getElementById('imageCaption');
+        const cancelImageUploadBtn = document.getElementById('cancelImageUpload');
+        const sendImageWithCaptionBtn = document.getElementById('sendImageWithCaption');
+
+        // تعديل دالة معالجة تحميل الصور
+        async function handleImageUpload(file) {
+            if (!selectedChat || !selectedDevice) {
+                alert('الرجاء اختيار محادثة أولاً');
+                return;
+            }
+
+            // التحقق من نوع الملف
+            if (!file.type.startsWith('image/')) {
+                alert('الرجاء تحديد ملف صورة فقط');
+                return;
+            }
+
+            // عرض معاينة للصورة وحفظها في المتغير العام
+            currentImageFile = file;
+            imagePreview.src = URL.createObjectURL(file);
+            imageCaption.value = '';
+
+            // عرض مربع الحوار
+            imageCaptionDialog.style.display = 'flex';
+        }
+
+        // عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            // جلب الأجهزة
+            loadDevices();
+            
+            // إعداد مستمعات الأحداث
+            setupEventListeners();
+        });
+        
+        // جلب قائمة الأجهزة
+        async function loadDevices() {
+            try {
+                const response = await fetch('/api/devices');
+                const result = await response.json();
+                
+                if (result.status) {
+                    devices = result.data;
+                    
+                    // تحديث قائمة اختيار الأجهزة
+                    updateDeviceSelect();
+                    
+                    // عرض رسالة عدم وجود أجهزة إذا لم تكن هناك أي أجهزة
+                    if (devices.length === 0) {
+                        noDevicesMessage.style.display = 'block';
+                    } else {
+                        noDevicesMessage.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('خطأ في جلب الأجهزة:', error);
+            }
+        }
+        
+        // تحديث قائمة اختيار الأجهزة
+        function updateDeviceSelect() {
+            // حذف جميع الأجهزة الحالية
+            deviceSelect.innerHTML = '<option value="">-- اختر جهازًا --</option>';
+            
+            // إضافة الأجهزة المتصلة فقط
+            const connectedDevices = devices.filter(device => 
+                device.status === 'connected' || 
+                device.status === 'authenticated' ||
+                device.currentStatus === 'connected'
+            );
+            
+            if (connectedDevices.length === 0) {
+                // إضافة رسالة لا توجد أجهزة متصلة
+                const option = document.createElement('option');
+                option.disabled = true;
+                option.textContent = 'لا توجد أجهزة متصلة';
+                deviceSelect.appendChild(option);
+            } else {
+                // إضافة الأجهزة المتصلة
+                connectedDevices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.id;
+                    option.textContent = device.name;
+                    deviceSelect.appendChild(option);
+                });
+                
+                // تحديد أول جهاز افتراضيًا
+                if (!selectedDevice && connectedDevices.length > 0) {
+                    deviceSelect.value = connectedDevices[0].id;
+                    selectedDevice = connectedDevices[0].id;
+                    loadChats(selectedDevice);
+                }
+            }
+        }
+        
+        // جلب المحادثات للجهاز المحدد
+        async function loadChats(deviceId) {
+            if (!deviceId) return;
+            
+            try {
+                const response = await fetch(`/api/devices/${deviceId}/chats`);
+                const result = await response.json();
+                
+                if (result.status) {
+                    // معالجة البيانات حسب التنسيق المستلم
+                    let chatsData = [];
+                    const data = result.data;
+                    
+                    if (Array.isArray(data)) {
+                        // إذا كانت البيانات عبارة عن مصفوفة مباشرة
+                        chatsData = data;
+                    } else if (typeof data === 'object') {
+                        // إذا كانت البيانات عبارة عن كائن يحتوي على مصفوفات لكل جهاز
+                        for (const chatDeviceId in data) {
+                            if (Array.isArray(data[chatDeviceId])) {
+                                chatsData = chatsData.concat(data[chatDeviceId]);
+                            }
+                        }
+                    }
+                    
+                    currentChats = chatsData;
+                    
+                    // ترتيب المحادثات حسب الوقت
+                    currentChats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    
+                    // تحديث قائمة المحادثات
+                    renderChats(currentChats);
+                    
+                    // إزالة المحادثة المحددة سابقًا
+                    selectedChat = null;
+                    resetChatView();
+                } else {
+                    chatsList.innerHTML = '<div class="p-3 text-center text-danger">فشل في جلب المحادثات</div>';
+                }
+            } catch (error) {
+                console.error('خطأ في جلب المحادثات:', error);
+                chatsList.innerHTML = '<div class="p-3 text-center text-danger">خطأ في جلب المحادثات</div>';
+            }
+        }
+        
+        // عرض المحادثات في القائمة
+        function renderChats(chats) {
+            chatsList.innerHTML = '';
+            
+            if (chats.length === 0) {
+                const noChatsMessage = document.createElement('div');
+                noChatsMessage.className = 'p-3 text-center text-muted';
+                noChatsMessage.textContent = 'لا توجد محادثات';
+                chatsList.appendChild(noChatsMessage);
+                return;
+            }
+            
+            chats.forEach(chat => {
+                const chatItem = createChatElement(chat);
+                chatsList.appendChild(chatItem);
+            });
+        }
+        
+        // إنشاء عنصر محادثة
+        function createChatElement(chat) {
+            const chatItem = document.createElement('div');
+            chatItem.className = 'chat-item';
+            chatItem.dataset.id = chat.id;
+            
+            // تحديد العنصر النشط
+            if (selectedChat && chat.id === selectedChat.id) {
+                chatItem.classList.add('active');
+            }
+            
+            // الصورة الرمزية
+            const avatar = document.createElement('div');
+            avatar.className = 'chat-avatar';
+            avatar.innerHTML = chat.isGroup ? '<i class="fas fa-users"></i>' : '<i class="fas fa-user"></i>';
+            
+            // التفاصيل
+            const details = document.createElement('div');
+            details.className = 'chat-details';
+            
+            const name = document.createElement('div');
+            name.className = 'chat-name';
+            name.textContent = chat.name || 'محادثة بدون اسم';
+            
+            const lastMessage = document.createElement('div');
+            lastMessage.className = 'chat-last-message';
+            if (chat.lastMessage) {
+                lastMessage.textContent = chat.lastMessage.body || 'صورة أو ملف';
+            } else {
+                lastMessage.textContent = 'لا توجد رسائل';
+            }
+            
+            details.appendChild(name);
+            details.appendChild(lastMessage);
+            
+            // معلومات إضافية
+            const meta = document.createElement('div');
+            meta.className = 'chat-meta';
+            
+            const time = document.createElement('div');
+            time.className = 'chat-time';
+            if (chat.timestamp || (chat.lastMessage && chat.lastMessage.timestamp)) {
+                const timestamp = chat.timestamp || chat.lastMessage.timestamp;
+                time.textContent = formatTime(timestamp * 1000); // تحويل من ثوانٍ إلى ميلي ثوانٍ
+            } else {
+                time.textContent = '';
+            }
+            
+            meta.appendChild(time);
+            
+            // شارة الرسائل غير المقروءة
+            if (chat.unreadCount > 0) {
+                const badge = document.createElement('div');
+                badge.className = 'chat-badge';
+                badge.textContent = chat.unreadCount > 99 ? '99+' : chat.unreadCount;
+                meta.appendChild(badge);
+            }
+            
+            // إضافة العناصر إلى العنصر الرئيسي
+            chatItem.appendChild(avatar);
+            chatItem.appendChild(details);
+            chatItem.appendChild(meta);
+            
+            // إضافة مستمع حدث النقر
+            chatItem.addEventListener('click', () => {
+                // إلغاء التحديد من العنصر السابق
+                const activeChat = document.querySelector('.chat-item.active');
+                if (activeChat) {
+                    activeChat.classList.remove('active');
+                }
+                
+                // تحديد العنصر الحالي
+                chatItem.classList.add('active');
+                
+                // تحديث المتغير العام
+                selectedChat = chat;
+                
+                // عرض المحادثة
+                showChat(chat);
+            });
+            
+            return chatItem;
+        }
+        
+        // عرض المحادثة المحددة
+        function showChat(chat) {
+            // إخفاء رسالة الترحيب
+            welcomeMessage.style.display = 'none';
+            
+            // عرض عناوين المحادثة
+            chatHeader.style.display = 'flex';
+            chatName.textContent = chat.name || 'محادثة بدون اسم';
+            
+            // عرض منطقة الرسائل
+            messagesContainer.style.display = 'block';
+            
+            // عرض منطقة الإدخال
+            inputArea.style.display = 'flex';
+            
+            // جلب رسائل المحادثة
+            loadMessages(chat.id);
+        }
+        
+        // إعادة تعيين عرض المحادثة
+        function resetChatView() {
+            // عرض رسالة الترحيب
+            welcomeMessage.style.display = 'flex';
+            
+            // إخفاء عناوين المحادثة
+            chatHeader.style.display = 'none';
+            
+            // إخفاء منطقة الرسائل
+            messagesContainer.style.display = 'none';
+            
+            // إخفاء منطقة الإدخال
+            inputArea.style.display = 'none';
+            
+            // مسح الرسائل
+            messagesContainer.innerHTML = '';
+        }
+        
+        // جلب رسائل المحادثة
+        async function loadMessages(chatId) {
+            if (!selectedDevice || !chatId) return;
+            
+            try {
+                // عرض رسالة تحميل
+                messagesContainer.innerHTML = '<div class="text-center my-4"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">جارِ تحميل الرسائل...</p></div>';
+                
+                const response = await fetch(`/api/chat/${chatId}/messages?deviceId=${selectedDevice}`);
+                const result = await response.json();
+                
+                if (result.status) {
+                    // ترتيب الرسائل حسب الوقت
+                    const messages = result.data;
+                    messages.sort((a, b) => a.timestamp - b.timestamp);
+                    
+                    // عرض الرسائل
+                    renderMessages(messages);
+                    
+                    // تمرير الشاشة إلى آخر رسالة
+                    scrollToBottom();
+                }
+            } catch (error) {
+                console.error('خطأ في جلب الرسائل:', error);
+                messagesContainer.innerHTML = '<div class="text-center my-4 text-danger"><i class="fas fa-exclamation-circle fa-3x mb-3"></i><p>حدث خطأ أثناء تحميل الرسائل</p></div>';
+            }
+        }
+        
+        // عرض الرسائل
+        function renderMessages(messages) {
+            messagesContainer.innerHTML = '';
+            
+            if (messages.length === 0) {
+                const noMessagesDiv = document.createElement('div');
+                noMessagesDiv.className = 'text-center my-4 text-muted';
+                noMessagesDiv.innerHTML = '<i class="fas fa-comments fa-3x mb-3"></i><p>لا توجد رسائل في هذه المحادثة</p>';
+                messagesContainer.appendChild(noMessagesDiv);
+                return;
+            }
+            
+            // تجميع الرسائل حسب التاريخ
+            let currentDate = null;
+            
+            messages.forEach(message => {
+                // إضافة فاصل تاريخ إذا تغير اليوم
+                const messageDate = new Date(message.timestamp * 1000).toLocaleDateString('ar-SA');
+                
+                if (messageDate !== currentDate) {
+                    currentDate = messageDate;
+                    
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'text-center my-3';
+                    dateDiv.innerHTML = `<span class="badge bg-light text-dark">${messageDate}</span>`;
+                    messagesContainer.appendChild(dateDiv);
+                }
+                
+                // إنشاء عنصر الرسالة
+                const messageElement = createMessageElement(message);
+                messagesContainer.appendChild(messageElement);
+            });
+            
+            // حفظ توقيت آخر رسالة
+            if (messages.length > 0) {
+                lastMessageTime[selectedChat.id] = messages[messages.length - 1].timestamp;
+            }
+        }
+        
+        // إنشاء عنصر رسالة
+        function createMessageElement(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = message.fromMe ? 'message message-outgoing' : 'message message-incoming';
+            
+            // نص الرسالة
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            messageText.textContent = message.body;
+            
+            // معلومات الرسالة
+            const messageMeta = document.createElement('div');
+            messageMeta.className = 'message-meta';
+            
+            const messageTime = new Date(message.timestamp * 1000);
+            messageMeta.textContent = messageTime.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            
+            // إضافة العناصر إلى العنصر الرئيسي
+            messageDiv.appendChild(messageText);
+            messageDiv.appendChild(messageMeta);
+            
+            return messageDiv;
+        }
+        
+        // إرسال رسالة
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            
+            if (!message || !selectedChat || !selectedDevice) return;
+            
+            try {
+                // استخراج رقم الهاتف من معرف المحادثة
+                let phoneNumber = selectedChat.id;
+                if (phoneNumber.includes("@")) {
+                    // إذا كان المعرف يحتوي على @ (مثل 123456789@c.us)
+                    phoneNumber = phoneNumber.split("@")[0];
+                }
+                
+                const response = await fetch('/api/messages/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        deviceId: selectedDevice,
+                        phoneNumber: phoneNumber,
+                        message: message
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status) {
+                    // مسح حقل الإدخال
+                    messageInput.value = '';
+                    
+                    // إضافة الرسالة إلى المحادثة
+                    const newMessage = {
+                        id: result.data.id,
+                        from: result.data.from,
+                        to: result.data.to,
+                        body: message,
+                        timestamp: Math.floor(Date.now() / 1000), // تحويل الوقت الحالي إلى ثواني
+                        fromMe: true
+                    };
+                    
+                    // إنشاء عنصر الرسالة
+                    const messageElement = createMessageElement(newMessage);
+                    messagesContainer.appendChild(messageElement);
+                    
+                    // تمرير الشاشة إلى آخر رسالة
+                    scrollToBottom();
+                    
+                    // تحديث المحادثة في القائمة
+                    updateChatListItem(selectedChat.id, newMessage);
+                } else {
+                    console.error('فشل في إرسال الرسالة:', result.message);
+                    alert('فشل في إرسال الرسالة: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في إرسال الرسالة:', error);
+                alert('خطأ في إرسال الرسالة: ' + error.message);
+            }
+        }
+        
+        // تحديث عنصر المحادثة في القائمة
+        function updateChatListItem(chatId, message) {
+            // تحديث المتغير العام
+            const chatIndex = currentChats.findIndex(chat => chat.id === chatId);
+            
+            if (chatIndex !== -1) {
+                currentChats[chatIndex].lastMessage = {
+                    body: message.body,
+                    fromMe: message.fromMe,
+                    timestamp: message.timestamp
+                };
+                
+                currentChats[chatIndex].timestamp = message.timestamp;
+                
+                // إعادة ترتيب المحادثات
+                currentChats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                
+                // إعادة عرض القائمة
+                renderChats(currentChats);
+            }
+        }
+        
+        // التمرير إلى آخر رسالة
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // تنسيق الوقت
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            
+            // إذا كان اليوم نفسه
+            if (date.toDateString() === now.toDateString()) {
+                return date.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // إذا كان هذا الأسبوع
+            const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diff < 7) {
+                return date.toLocaleDateString('ar-SA', { weekday: 'long' });
+            }
+            
+            // تاريخ كامل
+            return date.toLocaleDateString('ar-SA', { month: 'short', day: 'numeric' });
+        }
+        
+        // البحث في المحادثات
+        function searchChats(query) {
+            if (!query) {
+                renderChats(currentChats);
+                return;
+            }
+            
+            const filteredChats = currentChats.filter(chat => 
+                chat.name.toLowerCase().includes(query.toLowerCase()) ||
+                (chat.lastMessage && chat.lastMessage.body && 
+                 chat.lastMessage.body.toLowerCase().includes(query.toLowerCase()))
+            );
+            
+            renderChats(filteredChats);
+        }
+        
+        // إعداد مستمعات الأحداث
+        function setupEventListeners() {
+            // تغيير الجهاز
+            deviceSelect.addEventListener('change', function() {
+                selectedDevice = this.value;
+                
+                if (selectedDevice) {
+                    loadChats(selectedDevice);
+                } else {
+                    // إعادة تعيين العرض
+                    currentChats = [];
+                    renderChats([]);
+                    resetChatView();
+                }
+            });
+            
+            // إرسال رسالة
+            sendBtn.addEventListener('click', sendMessage);
+            
+            // إرسال الرسالة عند الضغط على Enter
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // البحث في المحادثات
+            searchInput.addEventListener('input', function() {
+                searchChats(this.value);
+            });
+            
+            // زر تحميل الصور
+            document.getElementById('upload-image-btn').addEventListener('click', function() {
+                document.getElementById('image-input').click();
+            });
+            
+            // معالجة تحميل الصور
+            document.getElementById('image-input').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    handleImageUpload(file);
+                }
+            });
+            
+            // إلغاء تحميل الصورة
+            cancelImageUploadBtn.addEventListener('click', function() {
+                currentImageFile = null;
+                imageCaptionDialog.style.display = 'none';
+            });
+
+            // إرسال الصورة مع التعليق التوضيحي
+            sendImageWithCaptionBtn.addEventListener('click', async function() {
+                // إخفاء مربع الحوار
+                imageCaptionDialog.style.display = 'none';
+                
+                try {
+                    // عرض رسالة تحميل في منطقة الرسائل
+                    const loadingMsgId = 'loading-' + Date.now();
+                    const loadingMessage = document.createElement('div');
+                    loadingMessage.id = loadingMsgId;
+                    loadingMessage.className = 'message message-outgoing';
+                    loadingMessage.innerHTML = `
+                        <div class="message-text">
+                            <div class="text-center">
+                                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                <span class="ms-2">جارِ تحميل الصورة...</span>
+                            </div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(loadingMessage);
+                    scrollToBottom();
+
+                    // تحميل الصورة إلى الخادم أولاً باستخدام FormData
+                    const formData = new FormData();
+                    formData.append('file', currentImageFile);
+                    
+                    const uploadResponse = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!uploadResponse.ok) {
+                        throw new Error('فشل تحميل الصورة');
+                    }
+                    
+                    const uploadResult = await uploadResponse.json();
+                    
+                    if (!uploadResult.status) {
+                        throw new Error(uploadResult.message || 'فشل تحميل الصورة');
+                    }
+                    
+                    // الحصول على مسار الملف المحمّل
+                    const filePath = uploadResult.data.filePath;
+                    
+                    // إزالة رسالة التحميل
+                    document.getElementById(loadingMsgId).remove();
+                    
+                    // استخراج رقم الهاتف من معرف المحادثة
+                    let phoneNumber = selectedChat.id;
+                    if (phoneNumber.includes("@")) {
+                        phoneNumber = phoneNumber.split("@")[0];
+                    }
+                    
+                    // الحصول على التعليق التوضيحي
+                    const caption = imageCaption.value.trim();
+                    
+                    // إرسال الرسالة مع الصورة
+                    const messageResponse = await fetch('/api/messages/send', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            deviceId: selectedDevice,
+                            phoneNumber: phoneNumber,
+                            // استخدام التعليق التوضيحي إذا كان موجودًا، أو إرسال "صورة" كنص افتراضي
+                            message: caption || "صورة",
+                            options: {
+                                mediaUrl: filePath
+                            }
+                        })
+                    });
+                    
+                    if (!messageResponse.ok) {
+                        throw new Error('فشل إرسال الرسالة');
+                    }
+                    
+                    const messageResult = await messageResponse.json();
+                    
+                    if (!messageResult.status) {
+                        throw new Error(messageResult.message || 'فشل إرسال الرسالة');
+                    }
+                    
+                    // مسح حقل الإدخال
+                    messageInput.value = '';
+                    
+                    console.log('تم إرسال الصورة بنجاح', messageResult);
+                    
+                    // تحديث الرسائل المعروضة
+                    const chat = selectedChat;
+                    loadMessages(chat.id);
+                    
+                } catch (error) {
+                    console.error('خطأ في إرسال الصورة:', error);
+                    alert('حدث خطأ أثناء إرسال الصورة: ' + error.message);
+                } finally {
+                    // إعادة تعيين متغير الصورة الحالية
+                    currentImageFile = null;
+                }
+            });
+
+            // الاستماع لأحداث الرسائل الجديدة
+            socket.on('new_message', (data) => {
+                const { deviceId, message } = data;
+                
+                // التحقق من أن الرسالة تنتمي إلى الجهاز المحدد
+                if (deviceId !== selectedDevice) return;
+                
+                // إذا كانت الرسالة تنتمي إلى المحادثة المفتوحة حاليًا
+                if (selectedChat && (message.from === selectedChat.id || message.to === selectedChat.id)) {
+                    // التحقق من أن الرسالة ليست مكررة
+                    if (lastMessageTime[selectedChat.id] && message.timestamp <= lastMessageTime[selectedChat.id]) {
+                        return;
+                    }
+                    
+                    // إضافة الرسالة إلى المحادثة
+                    const messageElement = createMessageElement(message);
+                    messagesContainer.appendChild(messageElement);
+                    
+                    // تمرير الشاشة إلى آخر رسالة
+                    scrollToBottom();
+                    
+                    // تحديث وقت آخر رسالة
+                    lastMessageTime[selectedChat.id] = message.timestamp;
+                }
+                
+                // تحديث المحادثة في القائمة
+                const chatIndex = currentChats.findIndex(chat => 
+                    chat.id === (message.fromMe ? message.to : message.from)
+                );
+                
+                if (chatIndex !== -1) {
+                    // تحديث المعلومات
+                    currentChats[chatIndex].lastMessage = {
+                        body: message.body,
+                        fromMe: message.fromMe,
+                        timestamp: message.timestamp
+                    };
+                    
+                    currentChats[chatIndex].timestamp = message.timestamp;
+                    
+                    // إعادة ترتيب المحادثات
+                    currentChats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    
+                    // إعادة عرض القائمة
+                    renderChats(currentChats);
+                }
+            });
+            
+            // الاستماع لأحداث تحديث المحادثات
+            socket.on('chat_updated', (data) => {
+                const { deviceId, chat } = data;
+                
+                // التحقق من أن المحادثة تنتمي إلى الجهاز المحدد
+                if (deviceId !== selectedDevice) return;
+                
+                // تحديث المحادثة في القائمة
+                const chatIndex = currentChats.findIndex(c => c.id === chat.id);
+                
+                if (chatIndex !== -1) {
+                    // تحديث المعلومات
+                    currentChats[chatIndex] = { 
+                        ...currentChats[chatIndex], 
+                        ...chat 
+                    };
+                    
+                    // إعادة ترتيب المحادثات
+                    currentChats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    
+                    // إعادة عرض القائمة
+                    renderChats(currentChats);
+                } else {
+                    // إضافة المحادثة إلى القائمة
+                    currentChats.push({ ...chat, deviceId });
+                    
+                    // إعادة ترتيب المحادثات
+                    currentChats.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                    
+                    // إعادة عرض القائمة
+                    renderChats(currentChats);
+                }
+            });
+            
+            // الاستماع لأحداث حالة الجهاز
+            socket.on('device_status_update', (data) => {
+                // تحديث حالة الجهاز في القائمة
+                const deviceIndex = devices.findIndex(device => device.id === data.id);
+                
+                if (deviceIndex !== -1) {
+                    devices[deviceIndex].status = data.status;
+                    
+                    if (data.info) {
+                        devices[deviceIndex].info = data.info;
+                    }
+                    
+                    // تحديث قائمة اختيار الأجهزة
+                    updateDeviceSelect();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

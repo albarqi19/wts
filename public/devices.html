@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الأجهزة - نظام إدارة واتساب</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .device-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .device-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .device-body {
+            padding: 20px;
+        }
+
+        .device-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-badge.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-badge.connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.authenticated {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .qr-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .qr-code {
+            max-width: 256px;
+            margin: 0 auto;
+        }
+
+        .add-device-card {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-device-card:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 211, 102, 0.05);
+        }
+
+        .add-device-icon {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .add-device-card:hover .add-device-icon {
+            color: var(--primary-color);
+        }
+
+        .navbar {
+            background-color: var(--primary-color);
+        }
+
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-link.active {
+            color: white;
+            font-weight: bold;
+        }
+
+        .device-info {
+            margin-bottom: 15px;
+        }
+
+        .device-info-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .device-info-label {
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .device-info-value {
+            flex: 1;
+        }
+
+        .modal-header, .modal-footer {
+            border: none;
+        }
+
+        .spinner-border {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط القائمة العلوي -->
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fab fa-whatsapp me-2"></i>
+                نظام إدارة واتساب
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chats">المحادثات</a>
+                    </li>
+                    <!-- Contacts link removed -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/devices">الأجهزة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/integration">التكامل</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">إدارة الأجهزة</h2>
+            <div>
+                <button class="btn btn-warning me-2" id="deleteAllSessionsBtn">
+                    <i class="fas fa-broom me-2"></i>
+                    حذف جميع الجلسات
+                </button>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة جهاز جديد
+                </button>
+            </div>
+        </div>
+
+        <div class="row" id="devices-container">
+            <!-- سيتم إضافة الأجهزة هنا ديناميكيًا -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3">جارِ تحميل الأجهزة...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج إضافة جهاز جديد -->
+    <div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDeviceModalLabel">إضافة جهاز جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDeviceForm">
+                        <div class="mb-3">
+                            <label for="deviceName" class="form-label">اسم الجهاز</label>
+                            <input type="text" class="form-control" id="deviceName" required>
+                            <div class="form-text">اختر اسمًا يساعدك على تمييز هذا الجهاز (مثل: هاتفي الشخصي، رقم العمل، إلخ)</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="addDeviceBtn">إضافة الجهاز</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج رمز QR -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel">مسح رمز QR للاتصال</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>افتح تطبيق واتساب على هاتفك وامسح رمز QR التالي:</p>
+                    <div id="qrCodeContainer" class="my-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">جارِ تحميل رمز QR...</p>
+                    </div>
+                    <p class="text-muted">يرجى الانتظار حتى يتم توليد رمز QR...</p>
+                    <div id="connectionStatus" class="alert alert-info" style="display: none;">
+                        جارِ الاتصال...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تأكيد الحذف -->
+    <div class="modal fade" id="deleteDeviceModal" tabindex="-1" aria-labelledby="deleteDeviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteDeviceModalLabel">حذف الجهاز</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من رغبتك في حذف هذا الجهاز؟</p>
+                    <p class="text-danger">سيتم قطع الاتصال مع هذا الجهاز وحذف جميع الإعدادات المرتبطة به.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نموذج تعديل الجهاز -->
+    <div class="modal fade" id="editDeviceModal" tabindex="-1" aria-labelledby="editDeviceModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDeviceModalLabel">تعديل بيانات الجهاز</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDeviceForm">
+                        <div class="mb-3">
+                            <label for="editDeviceName" class="form-label">اسم الجهاز</label>
+                            <input type="text" class="form-control" id="editDeviceName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="saveDeviceBtn">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // تهيئة اتصال Socket.io
+        const socket = io();
+
+        // عناصر واجهة المستخدم
+        const devicesContainer = document.getElementById('devices-container');
+        const addDeviceForm = document.getElementById('addDeviceForm');
+        const deviceNameInput = document.getElementById('deviceName');
+        const addDeviceBtn = document.getElementById('addDeviceBtn');
+        const editDeviceForm = document.getElementById('editDeviceForm');
+        const editDeviceNameInput = document.getElementById('editDeviceName');
+        const saveDeviceBtn = document.getElementById('saveDeviceBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // نماذج Bootstrap
+        const addDeviceModal = new bootstrap.Modal(document.getElementById('addDeviceModal'));
+        const qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
+        const deleteDeviceModal = new bootstrap.Modal(document.getElementById('deleteDeviceModal'));
+        const editDeviceModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
+
+        // متغيرات عامة
+        let devices = [];
+        let currentDeviceId = null;
+        let qrInterval = null;
+
+        // عند تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', () => {
+            // جلب قائمة الأجهزة
+            loadDevices();
+
+            // إعداد مستمعات الأحداث
+            setupEventListeners();
+        });
+
+        // جلب قائمة الأجهزة
+        async function loadDevices() {
+            try {
+                const response = await fetch('/api/devices');
+                const result = await response.json();
+
+                if (result.status) {
+                    devices = result.data || [];
+                    renderDevices();
+                } else {
+                    showError('فشل في جلب الأجهزة: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في جلب الأجهزة:', error);
+                showError('حدث خطأ أثناء جلب الأجهزة');
+            }
+        }
+
+        // عرض الأجهزة في الصفحة
+        function renderDevices() {
+            devicesContainer.innerHTML = '';
+
+            if (devices.length === 0) {
+                // عرض رسالة عدم وجود أجهزة
+                const noDevicesDiv = document.createElement('div');
+                noDevicesDiv.className = 'col-12 text-center py-5';
+                noDevicesDiv.innerHTML = `
+                    <div>
+                        <i class="fas fa-mobile-alt" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
+                        <h4>لا توجد أجهزة حتى الآن</h4>
+                        <p class="text-muted">انقر على زر "إضافة جهاز جديد" لبدء استخدام النظام</p>
+                    </div>
+                `;
+                devicesContainer.appendChild(noDevicesDiv);
+                return;
+            }
+
+            // عرض الأجهزة
+            devices.forEach(device => {
+                const deviceCard = createDeviceCard(device);
+                devicesContainer.appendChild(deviceCard);
+            });
+        }
+
+        // إنشاء بطاقة جهاز
+        function createDeviceCard(device) {
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-lg-4 col-md-6 col-sm-12';
+
+            // تحديد حالة الجهاز وعرضها بشكل مناسب
+            let statusText = 'غير متصل';
+            let statusClass = 'disconnected';
+            let statusIcon = 'fas fa-times-circle';
+
+            switch (device.status || device.currentStatus) {
+                case 'connecting':
+                    statusText = 'جارِ الاتصال';
+                    statusClass = 'connecting';
+                    statusIcon = 'fas fa-spinner fa-spin';
+                    break;
+                case 'connected':
+                    statusText = 'متصل';
+                    statusClass = 'connected';
+                    statusIcon = 'fas fa-check-circle';
+                    break;
+                case 'authenticated':
+                    statusText = 'متصل ومصادق';
+                    statusClass = 'authenticated';
+                    statusIcon = 'fas fa-check-double';
+                    break;
+                case 'disconnected':
+                default:
+                    statusText = 'غير متصل';
+                    statusClass = 'disconnected';
+                    statusIcon = 'fas fa-times-circle';
+                    break;
+            }
+
+            // بناء معلومات الجهاز
+            let deviceInfoHTML = `
+                <div class="device-info-item">
+                    <div class="device-info-label">الاسم:</div>
+                    <div class="device-info-value">${device.name}</div>
+                </div>
+                <div class="device-info-item">
+                    <div class="device-info-label">المعرّف:</div>
+                    <div class="device-info-value">${device.id.substring(0, 8)}...</div>
+                </div>
+            `;
+
+            // إضافة معلومات إضافية إذا كان الجهاز متصلًا
+            if (device.info) {
+                if (device.info.pushname) {
+                    deviceInfoHTML += `
+                        <div class="device-info-item">
+                            <div class="device-info-label">اسم المستخدم:</div>
+                            <div class="device-info-value">${device.info.pushname}</div>
+                        </div>
+                    `;
+                }
+
+                if (device.info.wid) {
+                    deviceInfoHTML += `
+                        <div class="device-info-item">
+                            <div class="device-info-label">رقم الهاتف:</div>
+                            <div class="device-info-value">${formatPhoneNumber(device.info.wid)}</div>
+                        </div>
+                    `;
+                }
+
+                if (device.info.platform) {
+                    deviceInfoHTML += `
+                        <div class="device-info-item">
+                            <div class="device-info-label">المنصة:</div>
+                            <div class="device-info-value">${device.info.platform}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            colDiv.innerHTML = `
+                <div class="device-card">
+                    <div class="device-header">
+                        <h5 class="mb-0">${device.name}</h5>
+                        <span class="status-badge ${statusClass}">
+                            <i class="${statusIcon} me-1"></i>
+                            ${statusText}
+                        </span>
+                    </div>
+                    <div class="device-body">
+                        <div class="device-info">
+                            ${deviceInfoHTML}
+                        </div>
+                        <div class="device-actions">
+                            ${(device.status === 'disconnected' || device.currentStatus === 'disconnected') ?
+                                `<button class="btn btn-success connect-btn" data-id="${device.id}">
+                                    <i class="fas fa-plug me-1"></i>
+                                    اتصال
+                                </button>` :
+                                `<button class="btn btn-danger disconnect-btn" data-id="${device.id}">
+                                    <i class="fas fa-unlink me-1"></i>
+                                    قطع الاتصال
+                                </button>`
+                            }
+                            <button class="btn btn-primary edit-btn" data-id="${device.id}" data-name="${device.name}">
+                                <i class="fas fa-edit me-1"></i>
+                                تعديل
+                            </button>
+                            <button class="btn btn-danger delete-btn" data-id="${device.id}">
+                                <i class="fas fa-trash me-1"></i>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // إضافة مستمعات الأحداث للأزرار
+            setTimeout(() => {
+                // زر الاتصال
+                const connectBtn = colDiv.querySelector('.connect-btn');
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', () => {
+                        connectDevice(device.id);
+                    });
+                }
+
+                // زر قطع الاتصال
+                const disconnectBtn = colDiv.querySelector('.disconnect-btn');
+                if (disconnectBtn) {
+                    disconnectBtn.addEventListener('click', () => {
+                        disconnectDevice(device.id);
+                    });
+                }
+
+                // زر التعديل
+                const editBtn = colDiv.querySelector('.edit-btn');
+                if (editBtn) {
+                    editBtn.addEventListener('click', () => {
+                        showEditDeviceModal(device.id, device.name);
+                    });
+                }
+
+                // زر الحذف
+                const deleteBtn = colDiv.querySelector('.delete-btn');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', () => {
+                        showDeleteDeviceModal(device.id);
+                    });
+                }
+            }, 0);
+
+            return colDiv;
+        }
+
+        // تنسيق رقم الهاتف
+        function formatPhoneNumber(phoneNumber) {
+            // التحقق من أن phoneNumber هو نص
+            if (!phoneNumber || typeof phoneNumber !== 'string') {
+                return phoneNumber || '';
+            }
+
+            // إزالة "@c.us" من رقم الهاتف
+            if (phoneNumber.endsWith('@c.us')) {
+                phoneNumber = phoneNumber.substring(0, phoneNumber.length - 5);
+            }
+
+            return phoneNumber;
+        }
+
+        // إضافة جهاز جديد
+        async function addNewDevice() {
+            const deviceName = deviceNameInput.value.trim();
+
+            if (!deviceName) {
+                alert('يرجى إدخال اسم للجهاز');
+                return;
+            }
+
+            // تعطيل زر الإضافة
+            addDeviceBtn.disabled = true;
+            addDeviceBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جارِ الإضافة...';
+
+            try {
+                // إضافة الجهاز الجديد
+                const response = await fetch('/api/devices', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: deviceName })
+                });
+
+                const result = await response.json();
+
+                if (result.status) {
+                    // إعادة تعيين النموذج
+                    deviceNameInput.value = '';
+
+                    // إغلاق نموذج الإضافة
+                    addDeviceModal.hide();
+
+                    // إضافة الجهاز الجديد إلى القائمة
+                    devices.push(result.data);
+                    renderDevices();
+
+                    // تنبيه للمستخدم
+                    alert('تمت إضافة الجهاز بنجاح. الآن اضغط على زر الاتصال للبدء في استخدام الجهاز.');
+                    
+                    // تأخير قصير ثم تمييز زر اتصال الجهاز الجديد
+                    setTimeout(() => {
+                        const newDeviceCard = document.querySelector(`.device-card [data-id="${result.data.id}"]`).closest('.device-card');
+                        if (newDeviceCard) {
+                            newDeviceCard.classList.add('highlight-card');
+                            setTimeout(() => {
+                                newDeviceCard.classList.remove('highlight-card');
+                            }, 3000);
+                        }
+                    }, 500);
+                    
+                    // ملاحظة: لن نقوم بالاتصال تلقائيًا، بل سننتظر المستخدم ليضغط على زر الاتصال
+                } else {
+                    alert('فشل في إضافة الجهاز: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في إضافة الجهاز:', error);
+                alert('حدث خطأ أثناء إضافة الجهاز');
+            } finally {
+                // إعادة تفعيل زر الإضافة
+                addDeviceBtn.disabled = false;
+                addDeviceBtn.innerHTML = 'إضافة الجهاز';
+            }
+        }
+
+        // اتصال الجهاز
+        async function connectDevice(deviceId) {
+            if (!deviceId) return;
+
+            try {
+                const response = await fetch(`/api/devices/${deviceId}/connect`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.status) {
+                    // عرض رمز QR إذا كان متاحًا
+                    showQRCode(deviceId);
+                } else {
+                    alert('فشل في الاتصال: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في الاتصال بالجهاز:', error);
+                alert('حدث خطأ أثناء الاتصال بالجهاز');
+            }
+        }
+
+        // قطع اتصال الجهاز
+        async function disconnectDevice(deviceId) {
+            if (!deviceId) return;
+
+            try {
+                const response = await fetch(`/api/devices/${deviceId}/disconnect`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.status) {
+                    // تحديث حالة الجهاز
+                    const deviceIndex = devices.findIndex(device => device.id === deviceId);
+
+                    if (deviceIndex !== -1) {
+                        devices[deviceIndex].status = 'disconnected';
+                        renderDevices();
+                    }
+                } else {
+                    alert('فشل في قطع الاتصال: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في قطع اتصال الجهاز:', error);
+                alert('حدث خطأ أثناء قطع اتصال الجهاز');
+            }
+        }
+
+        // حذف الجهاز
+        async function deleteDevice(deviceId) {
+            if (!deviceId) return;
+
+            // تعطيل زر الحذف
+            confirmDeleteBtn.disabled = true;
+            confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جارِ الحذف...';
+
+            try {
+                const response = await fetch(`/api/devices/${deviceId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.status) {
+                    // إغلاق النموذج
+                    deleteDeviceModal.hide();
+
+                    // حذف الجهاز من القائمة
+                    devices = devices.filter(device => device.id !== deviceId);
+                    renderDevices();
+                } else {
+                    alert('فشل في حذف الجهاز: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في حذف الجهاز:', error);
+                alert('حدث خطأ أثناء حذف الجهاز');
+            } finally {
+                // إعادة تفعيل زر الحذف
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.innerHTML = 'حذف';
+            }
+        }
+
+        // تعديل بيانات الجهاز
+        async function updateDevice(deviceId, newName) {
+            if (!deviceId || !newName) return;
+
+            // تعطيل زر الحفظ
+            saveDeviceBtn.disabled = true;
+            saveDeviceBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جارِ الحفظ...';
+
+            try {
+                const response = await fetch(`/api/devices/${deviceId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                const result = await response.json();
+
+                if (result.status) {
+                    // إغلاق النموذج
+                    editDeviceModal.hide();
+
+                    // تحديث بيانات الجهاز في القائمة
+                    const deviceIndex = devices.findIndex(device => device.id === deviceId);
+
+                    if (deviceIndex !== -1) {
+                        devices[deviceIndex].name = newName;
+                        renderDevices();
+                    }
+                } else {
+                    alert('فشل في تعديل الجهاز: ' + result.message);
+                }
+            } catch (error) {
+                console.error('خطأ في تعديل الجهاز:', error);
+                alert('حدث خطأ أثناء تعديل الجهاز');
+            } finally {
+                // إعادة تفعيل زر الحفظ
+                saveDeviceBtn.disabled = false;
+                saveDeviceBtn.innerHTML = 'حفظ التغييرات';
+            }
+        }
+
+        // عرض نموذج تعديل الجهاز
+        function showEditDeviceModal(deviceId, deviceName) {
+            currentDeviceId = deviceId;
+            editDeviceNameInput.value = deviceName;
+            editDeviceModal.show();
+        }
+
+        // عرض نموذج حذف الجهاز
+        function showDeleteDeviceModal(deviceId) {
+            currentDeviceId = deviceId;
+            deleteDeviceModal.show();
+        }
+
+        // عرض رمز QR
+        function showQRCode(deviceId) {
+            if (!deviceId) return;
+
+            currentDeviceId = deviceId;
+
+            // إعادة تعيين حالة النموذج
+            qrCodeContainer.innerHTML = '<div class="spinner-border text-primary" role="status"></div><p class="mt-2">جارِ تحميل رمز QR...</p>';
+            connectionStatus.style.display = 'none';
+
+            // عرض النموذج
+            qrModal.show();
+
+            // مسح جميع الفواصل الزمنية السابقة
+            if (qrInterval) {
+                clearInterval(qrInterval);
+            }
+
+            // جلب رمز QR للمرة الأولى
+            fetchQRCode(deviceId);
+
+            // جلب رمز QR بشكل دوري
+            qrInterval = setInterval(() => {
+                fetchQRCode(deviceId);
+            }, 5000);
+        }
+
+        // جلب رمز QR
+        async function fetchQRCode(deviceId) {
+            try {
+                const response = await fetch(`/api/devices/${deviceId}/qr`);
+                const result = await response.json();
+
+                if (result.status) {
+                    if (result.data.qr) {
+                        // عرض رمز QR
+                        qrCodeContainer.innerHTML = `<img src="${result.data.qr}" alt="رمز QR" class="qr-code">`;
+                        connectionStatus.style.display = 'none';
+                    } else if (result.data.status === 'connected' || result.data.status === 'authenticated') {
+                        // الجهاز متصل بالفعل
+                        qrCodeContainer.innerHTML = `
+                            <div class="text-success">
+                                <i class="fas fa-check-circle fa-4x mb-3"></i>
+                                <h4>تم الاتصال بنجاح!</h4>
+                            </div>
+                        `;
+                        connectionStatus.style.display = 'block';
+                        connectionStatus.className = 'alert alert-success';
+                        connectionStatus.innerHTML = '<i class="fas fa-check-circle me-2"></i> تم الاتصال بجهاز واتساب بنجاح';
+
+                        // وقف جلب رمز QR
+                        if (qrInterval) {
+                            clearInterval(qrInterval);
+                        }
+
+                        // تحديث القائمة
+                        loadDevices();
+                    } else {
+                        // حالة أخرى
+                        connectionStatus.style.display = 'block';
+                        connectionStatus.className = 'alert alert-info';
+                        connectionStatus.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> يرجى الانتظار، جارِ الاتصال...';
+                    }
+                } else {
+                    qrCodeContainer.innerHTML = `
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-circle fa-4x mb-3"></i>
+                            <h4>فشل في جلب رمز QR</h4>
+                            <p>${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('خطأ في جلب رمز QR:', error);
+                qrCodeContainer.innerHTML = `
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-circle fa-4x mb-3"></i>
+                        <h4>حدث خطأ</h4>
+                        <p>فشل في جلب رمز QR، يرجى المحاولة مرة أخرى</p>
+                    </div>
+                `;
+            }
+        }
+
+        // عرض رسالة خطأ
+        function showError(message) {
+            devicesContainer.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-circle fa-4x mb-3"></i>
+                        <h4>حدث خطأ</h4>
+                        <p>${message}</p>
+                        <button class="btn btn-primary mt-3" onclick="loadDevices()">إعادة المحاولة</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // إعداد مستمعات الأحداث
+        function setupEventListeners() {
+            // زر إضافة جهاز
+            addDeviceBtn.addEventListener('click', addNewDevice);
+
+            // زر تأكيد الحذف
+            confirmDeleteBtn.addEventListener('click', () => {
+                deleteDevice(currentDeviceId);
+            });
+
+            // زر حفظ تعديلات الجهاز
+            saveDeviceBtn.addEventListener('click', () => {
+                updateDevice(currentDeviceId, editDeviceNameInput.value.trim());
+            });
+
+            // زر حذف جميع الجلسات
+            document.getElementById('deleteAllSessionsBtn').addEventListener('click', deleteAllSessions);
+
+            // عند إغلاق نموذج رمز QR
+            document.getElementById('qrModal').addEventListener('hidden.bs.modal', () => {
+                // وقف جلب رمز QR
+                if (qrInterval) {
+                    clearInterval(qrInterval);
+                    qrInterval = null;
+                }
+            });
+
+            // الاستماع لأحداث تحديث حالة الجهاز
+            socket.on('device_status_update', (data) => {
+                const deviceIndex = devices.findIndex(device => device.id === data.id);
+
+                if (deviceIndex !== -1) {
+                    devices[deviceIndex].status = data.status;
+
+                    if (data.info) {
+                        devices[deviceIndex].info = data.info;
+                    }
+
+                    renderDevices();
+
+                    // إذا كان هناك نموذج رمز QR مفتوحًا وتم الاتصال
+                    if (currentDeviceId === data.id &&
+                        (data.status === 'connected' || data.status === 'authenticated') &&
+                        document.getElementById('qrModal').classList.contains('show')) {
+
+                        qrCodeContainer.innerHTML = `
+                            <div class="text-success">
+                                <i class="fas fa-check-circle fa-4x mb-3"></i>
+                                <h4>تم الاتصال بنجاح!</h4>
+                            </div>
+                        `;
+
+                        connectionStatus.style.display = 'block';
+                        connectionStatus.className = 'alert alert-success';
+                        connectionStatus.innerHTML = '<i class="fas fa-check-circle me-2"></i> تم الاتصال بجهاز واتساب بنجاح';
+
+                        // وقف جلب رمز QR
+                        if (qrInterval) {
+                            clearInterval(qrInterval);
+                        }
+                    }
+                }
+            });
+
+            // الاستماع لأحداث الجهاز الجديد
+            socket.on('new_device', (data) => {
+                const deviceIndex = devices.findIndex(device => device.id === data.id);
+
+                if (deviceIndex === -1) {
+                    // إضافة الجهاز الجديد
+                    devices.push(data);
+                } else {
+                    // تحديث الجهاز الموجود
+                    devices[deviceIndex] = data;
+                }
+
+                renderDevices();
+            });
+        }
+
+// حذف جميع الجلسات
+async function deleteAllSessions() {
+    if (!confirm('هل أنت متأكد من رغبتك في حذف جميع الجلسات؟ سيتم قطع اتصال جميع الأجهزة.')) {
+        return;
+    }
+
+    const deleteAllBtn = document.getElementById('deleteAllSessionsBtn');
+    deleteAllBtn.disabled = true;
+    deleteAllBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>جارِ الحذف...';
+
+    try {
+        // استخدام مسار logout-all بدلاً من delete-all-sessions
+        const response = await fetch('/api/devices/logout-all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            alert('تم قطع اتصال جميع الأجهزة بنجاح');
+            loadDevices(); // إعادة تحميل قائمة الأجهزة
+        } else {
+            const error = await response.json();
+            alert(`فشل في قطع الاتصال: ${error.message}`);
+        }
+    } catch (error) {
+        console.error('خطأ في قطع الاتصال:', error);
+        alert('حدث خطأ أثناء محاولة قطع الاتصال');
+    } finally {
+        deleteAllBtn.disabled = false;
+        deleteAllBtn.innerHTML = 'حذف جميع الجلسات';
+    }
+}
+    </script>
+</body>
+</html>
